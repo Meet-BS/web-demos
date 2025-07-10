@@ -1,22 +1,12 @@
 {
   "name": "web-demos",
   "version": "1.0.0",
-  "description": "Collection of web authentication and UI demos: Basic Auth, Form Auth, Cookie Blocking UI, and Multi-Page Auth",
-  "main": "start-all.js",
+  "description": "Web authentication demos: Basic Auth, Form Auth, Cookie Blocking UI, and Multi-Page Auth - all in one server",
+  "main": "server.js",
   "scripts": {
-    "start": "node start-all.js",
-    "start:landing": "node landing-server.js",
-    "start:basic": "cd basic-auth && node server.js",
-    "start:form": "cd form-auth && node server.js",
-    "start:blocking": "cd blocking-ui && node server.js",
-    "start:multipage": "cd multi-page-auth && node server.js",
-    "install-all": "npm install && cd basic-auth && npm install && cd ../form-auth && npm install && cd ../blocking-ui && npm install && cd ../multi-page-auth && npm install",
-    "setup": "npm run install-all && npm start",
-    "build": "npm run install-all",
+    "start": "node server.js",
     "dev": "npm start",
-    "production": "node production-start.js",
-    "health": "node health-check.js",
-    "test": "npm run health"
+    "build": "npm install"
   },
   "keywords": [
     "authentication",

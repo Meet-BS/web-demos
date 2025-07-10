@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Blocking UI Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .content-section { background: white; margin: 20px 0; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .blocking-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: none; z-index: 999; align-items: center; justify-content: center; }
+        .blocking-overlay.show { display: flex; }
+        .blocking-popup { background: white; padding: 40px; border-radius: 15px; text-align: center; max-width: 500px; margin: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .popup-icon { font-size: 4rem; margin-bottom: 20px; }
+        .popup-title { font-size: 24px; margin-bottom: 15px; color: #333; }
+        .popup-text { margin-bottom: 25px; color: #666; line-height: 1.6; }
+        .btn { background: #4CAF50; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; margin: 5px; text-decoration: none; display: inline-block; font-size: 16px; font-weight: 600; }
+        .btn:hover { opacity: 0.9; }
+        .btn-primary { background: #2196F3; }
+        .btn-secondary { background: #666; }
+        .status-indicator { padding: 15px; border-radius: 10px; margin: 20px 0; font-weight: bold; text-align: center; font-size: 18px; }
+        .status-accepted { background: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+        .status-blocked { background: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+        .demo-controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 20px 0; }
+        .content-blocked { filter: blur(5px); pointer-events: none; opacity: 0.3; }
+        .welcome-back { background: #e8f5e9; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 5px solid #4CAF50; }
+        .demo-explanation { background: #e3f2fd; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 5px solid #2196F3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content-section" id="main-content">
+            <h1>🍪 Cookie Blocking UI Demo</h1>
+            <div class="demo-explanation">
+                <h3>How this demo works:</h3>
+                <p>This page simulates a cookie consent blocking UI that many websites use. If you haven't accepted cookies before, a popup will block your view until you make a choice.</p>
+            </div>
+            <div id="cookie-status" class="status-indicator status-blocked">
+                🚫 First-time visitor - Please accept cookies to continue
+            </div>
+            <div id="welcome-section" class="welcome-back" style="display: none;">
+                <h3>✅ Welcome back!</h3>
+                <p>You've already accepted cookies, so no blocking popup appears. This is what returning visitors see.</p>
+            </div>
+            <div class="demo-controls">
+                <button class="btn btn-primary" onclick="showBlockingPopup()">Show Blocking Popup</button>
+                <button class="btn btn-secondary" onclick="resetDemo()">Reset Demo</button>
+                <button class="btn" onclick="checkCookieStatus()">Check Cookie Status</button>
+            </div>
+        </div>
+        <div class="content-section">
+            <h2>📊 Page Content</h2>
+            <p>This represents the main content of a website. When the blocking popup is active, this content is blurred and unclickable until the user accepts cookies.</p>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                <h4>Sample Content:</h4>
+                <ul>
+                    <li>Website navigation and menus</li>
+                    <li>Article content and images</li>
+                    <li>Interactive elements and forms</li>
+                    <li>Footer information and links</li>
+                </ul>
+            </div>
+            <div style="margin-top: 20px;">
+                <a href="/" class="btn btn-primary">← Back to Landing Page</a>
+            </div>
+        </div>
+    </div>
+    <!-- Blocking Overlay Popup -->
+    <div id="blocking-overlay" class="blocking-overlay">
+        <div class="blocking-popup">
+            <div class="popup-icon">🍪</div>
+            <h2 class="popup-title">We use cookies</h2>
+            <p class="popup-text">
+                This website uses cookies to enhance your browsing experience and provide personalized content. 
+                Please accept our cookie policy to continue browsing the site.
+            </p>
+            <div>
+                <button class="btn" onclick="acceptCookies()">✅ Accept & Continue</button>
+                <button class="btn btn-secondary" onclick="declineCookies()">❌ Decline</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function setCookie(name, value, days) {
+            const expires = new Date();
+            expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+        }
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+        function deleteCookie(name) {
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        }
+        function showBlockingPopup() {
+            document.getElementById('blocking-overlay').classList.add('show');
+            document.getElementById('main-content').classList.add('content-blocked');
+        }
+        function hideBlockingPopup() {
+            document.getElementById('blocking-overlay').classList.remove('show');
+            document.getElementById('main-content').classList.remove('content-blocked');
+        }
+        function acceptCookies() {
+            fetch('/blocking-ui/set-cookie', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            }).then(response => response.json())
+              .then(data => {
+                  setCookie('cookieConsent', 'accepted', 365);
+                  hideBlockingPopup();
+                  updateCookieStatus();
+              })
+              .catch(error => {
+                  setCookie('cookieConsent', 'accepted', 365);
+                  hideBlockingPopup();
+                  updateCookieStatus();
+              });
+        }
+        function declineCookies() {
+            setCookie('cookieConsent', 'declined', 365);
+            hideBlockingPopup();
+            updateCookieStatus();
+            setTimeout(() => {
+                alert('Cookies declined. Some features may be limited. You can change this later in the demo controls.');
+            }, 500);
+        }
+        function resetDemo() {
+            fetch('/blocking-ui/clear-cookie', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            }).then(() => {
+                deleteCookie('cookieConsent');
+                deleteCookie('existingUser');
+                updateCookieStatus();
+                setTimeout(showBlockingPopup, 1000);
+            });
+        }
+        function updateCookieStatus() {
+            const consent = getCookie('cookieConsent');
+            const statusEl = document.getElementById('cookie-status');
+            const welcomeEl = document.getElementById('welcome-section');
+            fetch('/blocking-ui/api/cookie-status')
+                .then(response => response.json())
+                .then(data => {
+                    if (consent === 'accepted' || data.hasExistingUserCookie) {
+                        statusEl.textContent = '✅ Cookies accepted - No blocking popup needed';
+                        statusEl.className = 'status-indicator status-accepted';
+                        welcomeEl.style.display = 'block';
+                    } else if (consent === 'declined') {
+                        statusEl.textContent = '❌ Cookies declined - Limited functionality';
+                        statusEl.className = 'status-indicator status-blocked';
+                        welcomeEl.style.display = 'none';
+                    } else {
+                        statusEl.textContent = '🚫 First-time visitor - Please accept cookies to continue';
+                        statusEl.className = 'status-indicator status-blocked';
+                        welcomeEl.style.display = 'none';
+                    }
+                });
+        }
+        function checkCookieStatus() { updateCookieStatus(); }
+        document.addEventListener('DOMContentLoaded', function() {
+            const consent = getCookie('cookieConsent');
+            updateCookieStatus();
+            fetch('/blocking-ui/api/cookie-status')
+                .then(response => response.json())
+                .then(data => {
+                    if (!consent && !data.hasExistingUserCookie) {
+                        setTimeout(showBlockingPopup, 200); // Reduced delay for popup
+                    }
+                });
+        });
+    </script>
+</body>
+</html>

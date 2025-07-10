@@ -166,72 +166,6 @@
             font-weight: 600;
         }
 
-        .quick-start {
-            background: white;
-            border-radius: 15px;
-            padding: 2.5rem;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-
-        .quick-start h2 {
-            color: #333;
-            margin-bottom: 1.5rem;
-            font-size: 2rem;
-        }
-
-        .quick-start p {
-            color: #666;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
-
-        .command-box {
-            background: #1a1a1a;
-            color: #00ff41;
-            padding: 1.5rem;
-            border-radius: 10px;
-            font-family: 'Monaco', 'Consolas', monospace;
-            margin: 1.5rem 0;
-            position: relative;
-            overflow-x: auto;
-        }
-
-        .command-box::before {
-            content: '$ ';
-            color: #00ff41;
-        }
-
-        .copy-btn {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            background: #333;
-            color: white;
-            border: none;
-            padding: 0.25rem 0.5rem;
-            border-radius: 5px;
-            font-size: 0.75rem;
-            cursor: pointer;
-        }
-
-        .tech-stack {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .tech-item {
-            background: #f8f9fa;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            color: #666;
-        }
-
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2.5rem;
@@ -246,20 +180,13 @@
                 padding: 2rem;
             }
         }
-
-        .footer {
-            text-align: center;
-            color: white;
-            margin-top: 3rem;
-            opacity: 0.8;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>🚀 Web Demos</h1>
-            <p>Interactive examples of authentication systems and UI patterns. Each demo runs on a different port and showcases different approaches to web security and user experience.</p>
+            <p>Demo pages for testing of features on Central scanner</p>
         </div>
 
         <div class="demos-grid">
@@ -272,8 +199,12 @@
                 
                 <div class="demo-credentials">
                     <strong>Demo Credentials:</strong><br>
-                    Username: <code>admin</code><br>
-                    Password: <code>secret123</code>
+                    <ul style="margin:0;padding-left:1.2em;">
+                      <li><b>admin</b> / admin</li>
+                      <li><b>test@meet.com</b> / Meet@123</li>
+                      <li><b>meetUser#</b> / meetPass</li>
+                      <li><b>Meet</b> / (^ O^)</li>
+                    </ul>
                 </div>
 
                 <div class="demo-features">
@@ -298,10 +229,13 @@
                 <p>Custom login forms with session management. Full control over styling and user experience with proper logout functionality.</p>
                 
                 <div class="demo-credentials">
-                    <strong>Demo Accounts:</strong><br>
-                    <code>admin/password123</code><br>
-                    <code>john/secret456</code><br>
-                    <code>user@example.com/mypassword</code>
+                    <strong>Demo Credentials:</strong><br>
+                    <ul style="margin:0;padding-left:1.2em;">
+                      <li><b>admin</b> / admin</li>
+                      <li><b>test@meet.com</b> / Meet@123</li>
+                      <li><b>meetUser#</b> / meetPass</li>
+                      <li><b>Meet</b> / (^ O^)</li>
+                    </ul>
                 </div>
 
                 <div class="demo-features">
@@ -349,13 +283,16 @@
                 <div class="status-indicator">Port 3004</div>
                 <span class="demo-icon">🔄</span>
                 <h3>Multi-Page Authentication</h3>
-                <p>3-step authentication flow with progressive disclosure. Enhanced user experience for complex authentication processes.</p>
+                <p>2-step authentication flow with progressive disclosure. Enhanced user experience for complex authentication processes.</p>
                 
                 <div class="demo-credentials">
-                    <strong>Demo Accounts:</strong><br>
-                    <code>user@example.com/password123</code><br>
-                    <code>john/mypassword</code><br>
-                    <code>admin/admin123</code>
+                    <strong>Demo Credentials:</strong><br>
+                    <ul style="margin:0;padding-left:1.2em;">
+                      <li><b>admin</b> / admin</li>
+                      <li><b>test@meet.com</b> / Meet@123</li>
+                      <li><b>meetUser#</b> / meetPass</li>
+                      <li><b>Meet</b> / (^ O^)</li>
+                    </ul>
                 </div>
 
                 <div class="demo-features">
@@ -372,35 +309,8 @@
                 </a>
             </div>
         </div>
-
-        <div class="quick-start">
-            <h2>🏃‍♂️ Quick Start</h2>
-            <p>Get all demos running with a single command:</p>
-            
-            <div class="command-box">
-                <button class="copy-btn" onclick="copyCommand()">Copy</button>
-                cd web-demos && npm start
-            </div>
-
-            <p>This will start all four servers simultaneously on ports 3001-3004.</p>
-
-            <div class="tech-stack">
-                <span class="tech-item">Node.js</span>
-                <span class="tech-item">Express.js</span>
-                <span class="tech-item">Sessions</span>
-                <span class="tech-item">Cookies</span>
-                <span class="tech-item">HTML5</span>
-                <span class="tech-item">CSS3</span>
-                <span class="tech-item">JavaScript</span>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p>💡 Use Ctrl+C in terminal to stop all servers</p>
-            <p>🔗 All demos are running locally and safe to explore</p>
-        </div>
+        <!-- End of .demos-grid -->
     </div>
-
     <script>
         function copyCommand() {
             const command = 'cd web-demos && npm start';

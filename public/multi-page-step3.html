@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Page Auth - Step 3</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+        .container { 
+            background: white; padding: 40px; border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-width: 500px; width: 100%;
+        }
+        h1 { text-align: center; margin-bottom: 10px; color: #333; }
+        .step-indicator { 
+            text-align: center; color: #666; margin-bottom: 30px; 
+            font-size: 14px; font-weight: bold;
+        }
+        .step { display: inline-block; margin: 0 5px; padding: 5px 10px; border-radius: 15px; }
+        .step.active { background: #667eea; color: white; }
+        .step.complete { background: #4CAF50; color: white; }
+        .step.inactive { background: #e0e0e0; color: #999; }
+        .form-group { margin-bottom: 20px; }
+        .checkbox-group { 
+            display: flex; align-items: flex-start; margin-bottom: 20px; 
+        }
+        .checkbox-group input[type="checkbox"] { 
+            margin-right: 10px; margin-top: 5px; transform: scale(1.2);
+        }
+        .checkbox-group label { 
+            font-size: 14px; line-height: 1.5; color: #555; cursor: pointer;
+        }
+        .btn { 
+            width: 100%; background: #4CAF50; color: white; border: none; 
+            padding: 12px; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 10px;
+        }
+        .btn:hover { background: #45a049; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .back-btn { 
+            background: #2196F3; margin-top: 10px; text-decoration: none; 
+            text-align: center; display: block; 
+        }
+        .back-btn:hover { background: #1976D2; }
+        .error { color: #f44336; margin-bottom: 15px; padding: 10px; background: #ffebee; border-radius: 5px; }
+        .demo-info { 
+            background: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px; 
+            font-size: 14px; border-left: 4px solid #667eea;
+        }
+        .terms-content {
+            background: #f9f9f9; padding: 15px; border-radius: 5px; margin: 15px 0;
+            max-height: 150px; overflow-y: auto; border: 1px solid #ddd;
+            font-size: 12px; line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Multi-Page Authentication</h1>
+        
+        <div class="step-indicator">
+            <span class="step complete">1</span>
+            <span class="step complete">2</span>
+            <span class="step active">3</span>
+        </div>
+        
+        <div class="demo-info">
+            <strong>Step 3:</strong> Accept terms and complete registration<br>
+            <strong>Almost done!</strong> Just accept the terms to finish.
+        </div>
+        
+        <script>
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            if (error) {
+                document.write('<div class="error">' + decodeURIComponent(error) + '</div>');
+            }
+        </script>
+        
+        <form method="POST" action="/multi-page-auth/complete">
+            <div class="terms-content">
+                <h4>Terms and Conditions</h4>
+                <p>This is a demo terms and conditions section. In a real application, this would contain:</p>
+                <ul>
+                    <li>Privacy policy details</li>
+                    <li>Data collection and usage terms</li>
+                    <li>User rights and responsibilities</li>
+                    <li>Service terms and conditions</li>
+                    <li>Cookie and tracking policies</li>
+                </ul>
+                <p>By accepting these terms, you agree to our demo authentication system and acknowledge that this is for testing purposes only.</p>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="terms" name="terms" value="accepted" required>
+                <label for="terms">
+                    I have read and agree to the Terms and Conditions and Privacy Policy
+                </label>
+            </div>
+            
+            <button type="submit" class="btn">Complete Registration ✓</button>
+        </form>
+        
+        <a href="/" class="btn back-btn">← Back to Landing</a>
+    </div>
+
+    <script>
+        // Enable/disable submit button based on checkbox
+        const checkbox = document.getElementById('terms');
+        const submitBtn = document.querySelector('button[type="submit"]');
+        
+        checkbox.addEventListener('change', function() {
+            submitBtn.disabled = !this.checked;
+        });
+        
+        // Initially disable the button
+        submitBtn.disabled = !checkbox.checked;
+    </script>
+</body>
+</html>

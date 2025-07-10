@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Auth Demo - Secure Area</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center; color: white;
+        }
+        .container { 
+            background: rgba(255,255,255,0.1); padding: 40px; border-radius: 15px; 
+            backdrop-filter: blur(10px); text-align: center; max-width: 500px;
+        }
+        h1 { margin-bottom: 20px; color: #FFF; }
+        .success-icon { font-size: 3rem; margin-bottom: 20px; }
+        .demo-info { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .user-info { background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .btn { 
+            background: #f44336; color: white; border: none; padding: 12px 24px; 
+            border-radius: 5px; cursor: pointer; margin: 10px; text-decoration: none; display: inline-block;
+        }
+        .btn:hover { background: #d32f2f; }
+        .back-btn { background: #2196F3; }
+        .back-btn:hover { background: #1976D2; }
+        .secure-message { 
+            background: #e3f2fd; padding: 16px 20px; border-radius: 8px; margin-bottom: 20px; 
+            text-align: left; color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">✅</div>
+        <h1>Welcome to Secure Area!</h1>
+        
+        <div class="user-info">
+            <p><strong>Logged in as:</strong> <span id="username">Loading...</span></p>
+        </div>
+        
+        <div class="secure-message">
+            <h2>Welcome, <span id="logged-in-user"></span>!</h2>
+        </div>
+        
+        <div class="demo-info">
+            <h3>Form Authentication Success!</h3>
+            <p>You've successfully logged in using form-based authentication. Your session is active and you can access protected resources.</p>
+        </div>
+
+        <div class="demo-info">
+            <h4>How Form Auth Works:</h4>
+            <ul style="text-align: left; margin: 10px 0;">
+                <li>Server validates credentials</li>
+                <li>Session cookie is set</li>
+                <li>Protected routes check session</li>
+                <li>Logout destroys session</li>
+            </ul>
+        </div>
+
+        <form method="POST" action="/form-auth/logout" style="display: inline;">
+            <button type="submit" class="btn">Logout</button>
+        </form>
+        
+        <a href="/" class="btn back-btn">← Back to Landing</a>
+    </div>
+
+    <script>
+        // Fetch and display current user
+        fetch('/form-auth/api/user')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('username').textContent = data.username;
+                document.getElementById('logged-in-user').textContent = data.username;
+            })
+            .catch(error => {
+                document.getElementById('username').textContent = 'Error loading user';
+                document.getElementById('logged-in-user').textContent = 'Error loading user';
+            });
+    </script>
+</body>
+</html>

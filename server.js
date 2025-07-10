@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Session configuration
-app.use(session({
+const sessionConfig = {
     secret: 'web-demos-production-secret-key-2024',
     resave: false,
     saveUninitialized: false,
@@ -21,45 +21,57 @@ app.use(session({
         secure: false,
         maxAge: 30 * 60 * 1000 // 30 minutes
     }
-}));
+};
+
+// Use SQLite session store in production to avoid MemoryStore warning
+if (isProduction) {
+    const SQLiteStore = require('connect-sqlite3')(session);
+    sessionConfig.store = new SQLiteStore({
+        db: 'sessions.db',
+        concurrentDB: true
+    });
+}
+
+app.use(session(sessionConfig));
 
 // Serve static files
 app.use(express.static('.'));
-app.use('/basic-auth', express.static('basic-auth/public'));
-app.use('/form-auth', express.static('form-auth/public'));
-app.use('/blocking-ui', express.static('blocking-ui/public'));
-app.use('/multi-page-auth', express.static('multi-page-auth/public'));
+app.use(express.static('public'));
 
 // Demo users for embedded demos
 const users = {
-    'admin': 'password123',
+    'admin': 'admin',
+    'test@meet.com': 'Meet@123',
+    'meetUser#': 'meetPass',
+    'Meet': '(^ O^)',
     'user@example.com': 'mypassword',
     'john': 'secret456',
     'jane.doe@email.com': 'jane123'
 };
 
+// Multi-page auth demo users
 const multiPageUsers = {
-    'user@example.com': 'password123',
-    'john': 'mypassword#',
-    'admin': 'admin123'
+    'admin': 'admin',
+    'test@meet.com': 'Meet@123',
+    'meetUser#': 'meetPass',
+    'Meet': '(^ O^)',
+    'admin@example.com': 'password123',
+    'user@demo.com': 'testpass',
+    'john.doe@email.com': 'secret456'
 };
 
-// Basic Auth credentials
-const BASIC_USERNAME = 'admin';
-const BASIC_PASSWORD = 'secret123';
-
-// Main landing page
+// Landing page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Health check endpoint
+// Health check endpoint for monitoring
 app.get('/health', (req, res) => {
     res.json({ 
         status: 'ok', 
-        message: 'Web Demos Landing Page with Embedded Demos',
-        environment: process.env.NODE_ENV || 'development',
-        port: PORT 
+        service: 'web-demos-unified', 
+        port: PORT,
+        timestamp: new Date().toISOString()
     });
 });
 
@@ -67,10 +79,8 @@ app.get('/health', (req, res) => {
 // BASIC AUTH DEMO - Embedded Implementation
 // =============================================================================
 
-// Basic Auth middleware
-const basicAuth = (req, res, next) => {
+app.get('/basic-auth', (req, res) => {
     const authHeader = req.headers.authorization;
-    
     if (!authHeader || !authHeader.startsWith('Basic ')) {
         res.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
         return res.status(401).send(`
@@ -79,17 +89,29 @@ const basicAuth = (req, res, next) => {
             <head>
                 <title>Authentication Required</title>
                 <style>
-                    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-                    .container { max-width: 500px; margin: 0 auto; background: #f5f5f5; padding: 30px; border-radius: 10px; }
+                    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f5f5f5; }
+                    .container { max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                    h2 { color: #333; margin-bottom: 20px; }
+                    p { color: #666; margin: 10px 0; }
                     .back-link { margin-top: 20px; }
-                    a { color: #007bff; text-decoration: none; }
+                    .back-link a { color: #007bff; text-decoration: none; }
+                    .demo-credentials { background:#e3f2fd;padding:16px 20px;border-radius:8px;margin:20px 0; text-align:left; }
+                    .demo-credentials ul { list-style:disc inside; margin:0; padding:0; }
                 </style>
             </head>
             <body>
                 <div class="container">
                     <h2>🔐 Authentication Required</h2>
                     <p>Please enter your credentials:</p>
-                    <p><strong>Username:</strong> admin<br><strong>Password:</strong> secret123</p>
+                    <div class="demo-credentials">
+                      <h3>Demo Credentials</h3>
+                      <ul>
+                        <li><b>admin</b> / admin</li>
+                        <li><b>test@meet.com</b> / Meet@123</li>
+                        <li><b>meetUser#</b> / meetPass</li>
+                        <li><b>Meet</b> / (^ O^)</li>
+                      </ul>
+                    </div>
                     <div class="back-link">
                         <a href="/">← Back to Landing Page</a>
                     </div>
@@ -98,35 +120,67 @@ const basicAuth = (req, res, next) => {
             </html>
         `);
     }
-    
     const base64Credentials = authHeader.split(' ')[1];
     const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
     const [username, password] = credentials.split(':');
-    
-    if (username === BASIC_USERNAME && password === BASIC_PASSWORD) {
-        next();
+    if (users[username] && users[username] === password) {
+        // Show secure page with logged-in user
+        return res.send(`
+            <!DOCTYPE html>
+            <html>
+            <head><title>Basic Auth Secure</title></head>
+            <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f5f5f5;">
+                <div class="container" style="max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h2>✅ Authenticated!</h2>
+                    <p>Welcome, <b>${username}</b>!</p>
+                    <form method="post" action="/basic-auth/logout">
+                        <button type="submit" style="margin-top:20px;padding:10px 20px;border-radius:5px;background:#ff6b6b;color:white;border:none;font-weight:bold;cursor:pointer;">Logout</button>
+                    </form>
+                    <div class="back-link" style="margin-top:20px;">
+                        <a href="/">← Back to Landing Page</a>
+                    </div>
+                </div>
+            </body>
+            </html>
+        `);
     } else {
         res.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
         return res.status(401).send(`
             <!DOCTYPE html>
             <html>
-            <head><title>Invalid Credentials</title></head>
-            <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-                <h2>❌ Invalid Credentials</h2>
-                <p>Please try again with: admin / secret123</p>
-                <a href="/">← Back to Landing Page</a>
+            <head><title>Invalid Credentials</title>
+            <style>
+                body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f5f5f5; }
+                .container { max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                h2 { color: #333; margin-bottom: 20px; }
+                p { color: #666; margin: 10px 0; }
+                .back-link { margin-top: 20px; }
+                .back-link a { color: #007bff; text-decoration: none; }
+                .demo-credentials { background:#e3f2fd;padding:16px 20px;border-radius:8px;margin:20px 0; text-align:left; }
+                .demo-credentials ul { list-style:disc inside; margin:0; padding:0; }
+            </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h2>❌ Invalid Credentials</h2>
+                    <p>Please try again with one of the following:</p>
+                    <div class="demo-credentials">
+                      <h3>Demo Credentials</h3>
+                      <ul>
+                        <li><b>admin</b> / admin</li>
+                        <li><b>test@meet.com</b> / Meet@123</li>
+                        <li><b>meetUser#</b> / meetPass</li>
+                        <li><b>Meet</b> / (^ O^)</li>
+                      </ul>
+                    </div>
+                    <div class="back-link">
+                        <a href="/">← Back to Landing Page</a>
+                    </div>
+                </div>
             </body>
             </html>
         `);
     }
-};
-
-app.get('/basic-auth', (req, res) => {
-    res.redirect('/basic-auth/');
-});
-
-app.get('/basic-auth/', basicAuth, (req, res) => {
-    res.sendFile(path.join(__dirname, 'basic-auth/public/secure.html'));
 });
 
 app.post('/basic-auth/logout', (req, res) => {
@@ -136,7 +190,7 @@ app.post('/basic-auth/logout', (req, res) => {
         <html>
         <head><title>Logged Out</title></head>
         <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-            <h2>� Logged Out Successfully</h2>
+            <h2>👋 Logged Out Successfully</h2>
             <p>You have been logged out. Refresh the page to login again.</p>
             <a href="/basic-auth">← Try Again</a> | <a href="/">← Back to Landing Page</a>
         </body>
@@ -172,20 +226,15 @@ app.get('/form-auth/login', (req, res) => {
         const redirect = req.query.redirect || '/form-auth/secure';
         return res.redirect(redirect);
     }
-    res.sendFile(path.join(__dirname, 'form-auth/public/login.html'));
+    res.sendFile(path.join(__dirname, 'public/form-auth-login.html'));
 });
 
 app.post('/form-auth/login', (req, res) => {
     const { username, password } = req.body;
-    
-    if (!username || !password) {
-        return res.redirect('/form-auth/login?error=Please enter both username and password');
-    }
-    
+    // Only check if the pair matches, no validation on content
     if (users[username] && users[username] === password) {
         req.session.formAuthenticated = true;
         req.session.formUsername = username;
-        
         const redirect = req.query.redirect || '/form-auth/secure';
         res.redirect(redirect);
     } else {
@@ -194,7 +243,7 @@ app.post('/form-auth/login', (req, res) => {
 });
 
 app.get('/form-auth/secure', requireFormAuth, (req, res) => {
-    res.sendFile(path.join(__dirname, 'form-auth/public/secure.html'));
+    res.sendFile(path.join(__dirname, 'public/form-auth-secure.html'));
 });
 
 app.post('/form-auth/logout', (req, res) => {
@@ -222,7 +271,7 @@ app.get('/form-auth/health', (req, res) => {
 // =============================================================================
 
 app.get('/blocking-ui', (req, res) => {
-    res.sendFile(path.join(__dirname, 'blocking-ui/public/content.html'));
+    res.sendFile(path.join(__dirname, 'public/blocking-ui-content.html'));
 });
 
 app.post('/blocking-ui/set-cookie', (req, res) => {
@@ -258,16 +307,12 @@ app.get('/multi-page-auth', (req, res) => {
     if (req.session && req.session.multiPageAuthenticated) {
         return res.redirect('/multi-page-auth/dashboard');
     }
-    res.sendFile(path.join(__dirname, 'multi-page-auth/public/step1.html'));
+    res.sendFile(path.join(__dirname, 'public/multi-page-step1.html'));
 });
 
 app.post('/multi-page-auth/step1', (req, res) => {
     const { email } = req.body;
-    
-    if (!email || !email.includes('@')) {
-        return res.redirect('/multi-page-auth?error=Please enter a valid email address');
-    }
-    
+    // No validation on email content
     req.session.multiPageStep = 1;
     req.session.multiPageEmail = email;
     res.redirect('/multi-page-auth/step2');
@@ -277,59 +322,29 @@ app.get('/multi-page-auth/step2', (req, res) => {
     if (!req.session.multiPageStep || req.session.multiPageStep < 1) {
         return res.redirect('/multi-page-auth');
     }
-    res.sendFile(path.join(__dirname, 'multi-page-auth/public/step2.html'));
+    res.sendFile(path.join(__dirname, 'public/multi-page-step2.html'));
 });
 
 app.post('/multi-page-auth/step2', (req, res) => {
-    const { password, confirmPassword } = req.body;
-    
-    if (!password || !confirmPassword) {
-        return res.redirect('/multi-page-auth/step2?error=Please fill in all fields');
-    }
-    
-    if (password !== confirmPassword) {
-        return res.redirect('/multi-page-auth/step2?error=Passwords do not match');
-    }
-    
-    if (password.length < 6) {
-        return res.redirect('/multi-page-auth/step2?error=Password must be at least 6 characters');
-    }
-    
-    // Check if user exists
+    const { password } = req.body;
+    // No validation on password content
     const email = req.session.multiPageEmail;
     if (multiPageUsers[email] && multiPageUsers[email] === password) {
         req.session.multiPageStep = 2;
         req.session.multiPagePassword = password;
-        res.redirect('/multi-page-auth/step3');
+        req.session.multiPageAuthenticated = true;
+        req.session.multiPageUsername = email;
+        return res.redirect('/multi-page-auth/dashboard');
     } else {
-        res.redirect('/multi-page-auth/step2?error=Invalid email or password');
+        return res.redirect('/multi-page-auth/step2?error=Invalid email or password');
     }
-});
-
-app.get('/multi-page-auth/step3', (req, res) => {
-    if (!req.session.multiPageStep || req.session.multiPageStep < 2) {
-        return res.redirect('/multi-page-auth');
-    }
-    res.sendFile(path.join(__dirname, 'multi-page-auth/public/step3.html'));
-});
-
-app.post('/multi-page-auth/complete', (req, res) => {
-    const { terms } = req.body;
-    
-    if (!terms) {
-        return res.redirect('/multi-page-auth/step3?error=Please accept the terms and conditions');
-    }
-    
-    req.session.multiPageAuthenticated = true;
-    req.session.multiPageUsername = req.session.multiPageEmail;
-    res.redirect('/multi-page-auth/dashboard');
 });
 
 app.get('/multi-page-auth/dashboard', (req, res) => {
     if (!req.session.multiPageAuthenticated) {
         return res.redirect('/multi-page-auth');
     }
-    res.sendFile(path.join(__dirname, 'multi-page-auth/public/dashboard.html'));
+    res.sendFile(path.join(__dirname, 'public/multi-page-dashboard.html'));
 });
 
 app.post('/multi-page-auth/logout', (req, res) => {
@@ -353,8 +368,13 @@ app.get('/multi-page-auth/health', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Web Demos Landing Page running at http://localhost:${PORT}`);
+    console.log(`Web Demos unified server running at http://localhost:${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log('Available demos:');
+    console.log('  - Basic Auth: /basic-auth');
+    console.log('  - Form Auth: /form-auth');
+    console.log('  - Cookie Blocking UI: /blocking-ui');
+    console.log('  - Multi-Page Auth: /multi-page-auth');
 });
 
 module.exports = app;
