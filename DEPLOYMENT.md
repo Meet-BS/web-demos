@@ -72,9 +72,10 @@ Deploy each demo as a separate service for maximum isolation:
 - **Health Checks:** Available at `/health` for all services
 
 ### Production Behavior
-- Single service mode: Only serves landing page
-- Individual service mode: Each demo runs independently
+- **Single service mode:** Landing page with demo info pages (not full demos)
+- **Individual service mode:** Each demo runs independently with full functionality
 - All demos include health check endpoints for monitoring
+- Landing page automatically detects environment (production vs development)
 
 ### Monitoring
 - Health endpoint: `GET /health`
@@ -123,6 +124,12 @@ npm start
 3. **Individual Demos Not Working**
    - For single service: demos are embedded in landing page
    - For separate services: deploy each folder individually
+
+4. **Demo Links Redirecting to Localhost**
+   - The landing page automatically detects environment
+   - In production: shows demo info pages with instructions
+   - In development: opens individual demo servers
+   - No configuration needed - works automatically
 
 ### Debug Commands
 
