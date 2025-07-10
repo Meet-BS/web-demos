@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(express.static('public'));
@@ -150,7 +150,12 @@ app.get('/secure', basicAuth, (req, res) => {
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', service: 'basic-auth' });
+    res.json({ 
+        status: 'ok', 
+        service: 'basic-auth',
+        environment: process.env.NODE_ENV || 'development',
+        port: PORT 
+    });
 });
 
 // Logout endpoint - sends 401 to clear browser credentials
@@ -212,5 +217,6 @@ app.get('/clear-auth', (req, res) => {
 // Start server
 app.listen(PORT, () => {
     console.log(`Basic Auth server running at http://localhost:${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log('Demo credentials: admin / secret123');
 });

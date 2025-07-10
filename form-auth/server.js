@@ -3,7 +3,7 @@ const session = require('express-session');
 const path = require('path');
 
 const app = express();
-const PORT = 3002;
+const PORT = process.env.PORT || 3002;
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -89,7 +89,12 @@ app.post('/logout', (req, res) => {
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', service: 'form-auth' });
+    res.json({ 
+        status: 'ok', 
+        service: 'form-auth',
+        environment: process.env.NODE_ENV || 'development',
+        port: PORT 
+    });
 });
 
 // API endpoint to get user info
@@ -102,6 +107,7 @@ app.get('/api/user', requireAuth, (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Form Auth server running at http://localhost:${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log('Demo users:');
     Object.keys(users).forEach(username => {
         console.log(`- ${username} / ${users[username]}`);

@@ -1,23 +1,195 @@
-# Web Demos
+# Web Demos - Authentication & UI Showcase
 
-Four different web authentication and UI systems demonstrating various approaches to web security and user experience.
+A comprehensive collection of web authentication and UI demos featuring Basic Auth, Form-based Auth, Cookie Blocking UI, and Multi-Page Authentication flows.
 
-## Projects
+## 🌟 Live Demo
 
-### 1. 🔐 Basic Auth (`/basic-auth`)
-- **Port**: 3001
-- **Demo**: HTTP Basic Authentication
-- **Features**: Browser-native auth dialog, simple credentials
-- **Credentials**: admin/secret123
+Visit the live deployment: [Web Demos on Render](https://your-app-name.onrender.com)
 
-### 2. 📝 Form Auth (`/form-auth`)  
-- **Port**: 3002
-- **Demo**: Custom form-based authentication with sessions
-- **Features**: Custom login form, session management, multiple users
-- **Credentials**: admin/password123, john/secret456, user@example.com/mypassword
+## 🏗️ Architecture
 
-### 3. 🚫 Blocking UI (`/blocking-ui`)
-- **Port**: 3003  
+This project contains 5 Express.js servers:
+- **Landing Page** (Port 3000): Central hub with navigation and status monitoring
+- **Basic Auth Demo** (Port 3001): HTTP Basic Authentication with browser popup
+- **Form Auth Demo** (Port 3002): Session-based form authentication
+- **Cookie Blocking UI** (Port 3003): Cookie-based access control demo
+- **Multi-Page Auth** (Port 3004): Multi-step authentication workflow
+
+## 🚀 Local Development
+
+### Prerequisites
+- Node.js 16+ and npm
+
+### Quick Start
+```bash
+# Clone and navigate to project
+git clone <your-repo-url>
+cd web-demos
+
+# Install dependencies for all demos
+npm run install-all
+
+# Start all servers in parallel
+npm start
+```
+
+Visit http://localhost:3000 to access the landing page with links to all demos.
+
+### Individual Demo Development
+```bash
+# Start a single demo
+npm run start:basic    # Basic Auth Demo
+npm run start:form     # Form Auth Demo
+npm run start:blocking # Cookie Blocking UI
+npm run start:multipage # Multi-Page Auth
+```
+
+## 🌐 Deployment on Render
+
+### Option 1: Single Service Deployment (Recommended)
+Deploy all demos as one service with multiple ports:
+
+1. **Create a new Web Service** on Render
+2. **Connect your GitHub repository**
+3. **Configure the service:**
+   - **Build Command:** `npm run install-all`
+   - **Start Command:** `npm start`
+   - **Environment:** `Node`
+4. **Set Environment Variables:**
+   - `NODE_ENV`: `production`
+   - `PORT`: `3000` (Render will override this)
+5. **Deploy**
+
+### Option 2: Multiple Service Deployment
+Deploy each demo as a separate Render service:
+
+#### Landing Page Service
+- **Build Command:** `npm install`
+- **Start Command:** `npm run start:landing`
+- **Root Directory:** `/`
+
+#### Basic Auth Service
+- **Build Command:** `npm install`
+- **Start Command:** `npm start`
+- **Root Directory:** `/basic-auth`
+
+#### Form Auth Service
+- **Build Command:** `npm install`
+- **Start Command:** `npm start`
+- **Root Directory:** `/form-auth`
+
+#### Cookie Blocking Service
+- **Build Command:** `npm install`
+- **Start Command:** `npm start`
+- **Root Directory:** `/blocking-ui`
+
+#### Multi-Page Auth Service
+- **Build Command:** `npm install`
+- **Start Command:** `npm start`
+- **Root Directory:** `/multi-page-auth`
+
+### Environment Configuration
+
+The application automatically detects the Render environment and configures ports accordingly:
+
+- **Local Development:** Uses ports 3000-3004
+- **Render Deployment:** Uses the PORT environment variable provided by Render
+
+### Health Checks
+
+All servers include `/health` endpoints for monitoring:
+- Landing Page: `GET /health`
+- Individual Demos: `GET /health`
+
+## 📁 Project Structure
+
+```
+web-demos/
+├── package.json              # Root dependencies and scripts
+├── start-all.js             # Multi-server startup script
+├── landing-server.js        # Landing page server
+├── index.html              # Landing page UI
+├── render.yaml             # Render deployment config
+├── basic-auth/             # Basic Auth Demo
+│   ├── server.js
+│   ├── package.json
+│   └── public/
+├── form-auth/              # Form Auth Demo
+│   ├── server.js
+│   ├── package.json
+│   └── public/
+├── blocking-ui/            # Cookie Blocking Demo
+│   ├── server.js
+│   ├── package.json
+│   └── public/
+└── multi-page-auth/        # Multi-Page Auth Demo
+    ├── server.js
+    ├── package.json
+    └── public/
+```
+
+## 🔧 Available Scripts
+
+- `npm start` - Start all servers in parallel
+- `npm run install-all` - Install dependencies for all demos
+- `npm run setup` - Full setup and start
+- `npm run start:landing` - Start only landing page
+- `npm run start:basic` - Start Basic Auth demo
+- `npm run start:form` - Start Form Auth demo
+- `npm run start:blocking` - Start Cookie Blocking demo
+- `npm run start:multipage` - Start Multi-Page Auth demo
+
+## 🎯 Demo Features
+
+### Basic Auth Demo
+- HTTP Basic Authentication
+- Browser popup login
+- Credentials: `admin` / `secret123`
+- Logout and redo functionality
+
+### Form Auth Demo
+- Session-based authentication
+- Custom login form
+- Credentials: `admin` / `password123`
+- Session management
+
+### Cookie Blocking UI Demo
+- Cookie-based access control
+- Interactive UI for managing access
+- Real-time status updates
+
+### Multi-Page Auth Demo
+- 3-step authentication workflow
+- Progressive access levels
+- Step-by-step validation
+
+## 🛠️ Technologies Used
+
+- **Backend:** Node.js, Express.js
+- **Session Management:** express-session
+- **Cookie Parsing:** cookie-parser
+- **Frontend:** HTML5, CSS3, JavaScript (Vanilla)
+- **Deployment:** Render
+
+## 📝 License
+
+MIT License
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 🐛 Issues
+
+If you encounter any issues or have suggestions, please [open an issue](https://github.com/your-username/web-demos/issues).
+
+---
+
+⭐ **Star this repository if you find it helpful!**  
 - **Demo**: Cookie-based blocking overlay
 - **Features**: First-time user blocking UI, cookie persistence
 - **Behavior**: Shows overlay until "existingUser" cookie is set

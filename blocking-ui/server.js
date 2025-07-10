@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 
 const app = express();
-const PORT = 3003;
+const PORT = process.env.PORT || 3003;
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -39,7 +39,12 @@ app.post('/clear-cookie', (req, res) => {
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', service: 'blocking-ui' });
+    res.json({ 
+        status: 'ok', 
+        service: 'blocking-ui',
+        environment: process.env.NODE_ENV || 'development',
+        port: PORT 
+    });
 });
 
 // API to check cookie status
@@ -53,5 +58,6 @@ app.get('/api/cookie-status', (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Blocking UI server running at http://localhost:${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log('This demo shows a blocking UI that appears when a cookie is not set');
 });

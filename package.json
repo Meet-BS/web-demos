@@ -5,12 +5,18 @@
   "main": "start-all.js",
   "scripts": {
     "start": "node start-all.js",
+    "start:landing": "node landing-server.js",
     "start:basic": "cd basic-auth && node server.js",
     "start:form": "cd form-auth && node server.js",
     "start:blocking": "cd blocking-ui && node server.js",
     "start:multipage": "cd multi-page-auth && node server.js",
     "install-all": "cd basic-auth && npm install && cd ../form-auth && npm install && cd ../blocking-ui && npm install && cd ../multi-page-auth && npm install",
-    "setup": "npm run install-all && npm start"
+    "setup": "npm run install-all && npm start",
+    "build": "npm run install-all",
+    "dev": "npm start",
+    "production": "node production-start.js",
+    "health": "node health-check.js",
+    "test": "npm run health"
   },
   "keywords": [
     "authentication",
@@ -28,5 +34,9 @@
     "cookie-parser": "^1.4.6",
     "express": "^4.21.2",
     "express-session": "^1.17.3"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }

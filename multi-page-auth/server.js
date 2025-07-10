@@ -3,7 +3,7 @@ const session = require('express-session');
 const path = require('path');
 
 const app = express();
-const PORT = 3004;
+const PORT = process.env.PORT || 3004;
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -102,7 +102,12 @@ app.post('/logout', (req, res) => {
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', service: 'multi-page-auth' });
+    res.json({ 
+        status: 'ok', 
+        service: 'multi-page-auth',
+        environment: process.env.NODE_ENV || 'development',
+        port: PORT 
+    });
 });
 
 // API endpoint to get username for dashboard
@@ -116,6 +121,7 @@ app.get('/api/user', (req, res) => {
 // Start server
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log('Sample users:');
     console.log('- user@example.com / password123');
     console.log('- john / mypassword#');
