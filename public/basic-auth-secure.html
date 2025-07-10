@@ -23,8 +23,19 @@
             border-radius: 5px; cursor: pointer; margin: 10px; text-decoration: none; display: inline-block;
         }
         .btn:hover { background: #d32f2f; }
-        .back-btn { background: #2196F3; }
-        .back-btn:hover { background: #1976D2; }
+        .btn.back-btn, a.btn.back-btn {
+            background: #2196F3;
+            color: white !important;
+            text-decoration: none !important;
+            display: inline-block;
+            border-radius: 5px;
+            padding: 12px 24px;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+        .btn.back-btn:hover, a.btn.back-btn:hover {
+            background: #1976D2;
+        }
     </style>
 </head>
 <body>
@@ -51,7 +62,7 @@
             <button type="submit" class="btn">Logout & Try Again</button>
         </form>
         
-        <a href="/" class="btn back-btn">← Back to Landing</a>
+        <a href="/" class="btn back-btn" style="text-decoration:none;">← Back to Landing</a>
     </div>
 </body>
 </html>

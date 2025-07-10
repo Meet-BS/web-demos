@@ -79,6 +79,7 @@
         .demo-card.form { --accent-color: #ff6b6b; }
         .demo-card.blocking { --accent-color: #f39c12; }
         .demo-card.multipage { --accent-color: #9b59b6; }
+        .demo-card.simple { --accent-color: #ff9800; }
 
         .demo-icon {
             font-size: 4rem;
@@ -155,15 +156,7 @@
         }
 
         .status-indicator {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            padding: 0.25rem 0.75rem;
-            background: var(--accent-color);
-            color: white;
-            border-radius: 15px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            display: none;
         }
 
         @media (max-width: 768px) {
@@ -252,6 +245,37 @@
                 </a>
             </div>
 
+            <!-- Simple Password Auth Demo -->
+            <div class="demo-card simple" style="--accent-color: #ff9800;">
+                <div class="status-indicator">Port 3005</div>
+                <span class="demo-icon">🔑</span>
+                <h3>Simple Password Authentication</h3>
+                <p>Password-only login. No username or email required—just enter the correct password to access the secure area.</p>
+                
+                <div class="demo-credentials">
+                    <strong>Demo Passwords:</strong><br>
+                    <ul style="margin:0;padding-left:1.2em;">
+                      <li><b>admin</b></li>
+                      <li><b>Meet@123</b></li>
+                      <li><b>meetPass</b></li>
+                      <li><b>(^ O^)</b></li>
+                    </ul>
+                </div>
+
+                <div class="demo-features">
+                    <ul>
+                        <li>Password-only authentication</li>
+                        <li>No username or email required</li>
+                        <li>Session-based access</li>
+                        <li>Secure logout functionality</li>
+                    </ul>
+                </div>
+
+                <a href="/simple-password-auth" class="demo-btn">
+                    Launch Simple Password Auth →
+                </a>
+            </div>
+
             <!-- Blocking UI Demo -->
             <div class="demo-card blocking">
                 <div class="status-indicator">Port 3003</div>
@@ -308,6 +332,7 @@
                     Launch Multi-Page Auth →
                 </a>
             </div>
+            <!-- End Simple Password Auth Demo -->
         </div>
         <!-- End of .demos-grid -->
     </div>
@@ -330,7 +355,8 @@
                 { name: 'Basic Auth', path: '/basic-auth/health' },
                 { name: 'Form Auth', path: '/form-auth/health' },
                 { name: 'Blocking UI', path: '/blocking-ui/health' },
-                { name: 'Multi-Page Auth', path: '/multi-page-auth/health' }
+                { name: 'Multi-Page Auth', path: '/multi-page-auth/health' },
+                { name: 'Simple Password Auth', path: '/simple-password-auth/health' }
             ];
             
             const cards = document.querySelectorAll('.demo-card');

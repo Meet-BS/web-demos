@@ -60,21 +60,6 @@ const multiPageUsers = {
     'john.doe@email.com': 'secret456'
 };
 
-// Landing page
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Health check endpoint for monitoring
-app.get('/health', (req, res) => {
-    res.json({ 
-        status: 'ok', 
-        service: 'web-demos-unified', 
-        port: PORT,
-        timestamp: new Date().toISOString()
-    });
-});
-
 // =============================================================================
 // BASIC AUTH DEMO - Embedded Implementation
 // =============================================================================
@@ -365,6 +350,73 @@ app.get('/multi-page-auth/api/user', (req, res) => {
 
 app.get('/multi-page-auth/health', (req, res) => {
     res.json({ status: 'ok', service: 'multi-page-auth-embedded', port: PORT });
+});
+
+// =============================================================================
+// SIMPLE PASSWORD AUTH DEMO - Password Only (No Username)
+// =============================================================================
+
+const simplePasswords = [
+    'admin',
+    'Meet@123',
+    'meetPass',
+    '(^ O^)' // include the special password
+];
+
+const requireSimplePasswordAuth = (req, res, next) => {
+    if (req.session && req.session.simplePasswordAuthenticated) {
+        return next();
+    } else {
+        return res.redirect('/simple-password-auth/login?redirect=' + encodeURIComponent(req.originalUrl));
+    }
+};
+
+app.get('/simple-password-auth', (req, res) => {
+    if (req.session && req.session.simplePasswordAuthenticated) {
+        return res.redirect('/simple-password-auth/secure');
+    }
+    res.redirect('/simple-password-auth/login');
+});
+
+app.get('/simple-password-auth/login', (req, res) => {
+    if (req.session && req.session.simplePasswordAuthenticated) {
+        const redirect = req.query.redirect || '/simple-password-auth/secure';
+        return res.redirect(redirect);
+    }
+    res.sendFile(path.join(__dirname, 'public/simple-password-login.html'));
+});
+
+app.post('/simple-password-auth/login', (req, res) => {
+    const { password } = req.body;
+    if (simplePasswords.includes(password)) {
+        req.session.simplePasswordAuthenticated = true;
+        req.session.simplePassword = password;
+        const redirect = req.query.redirect || '/simple-password-auth/secure';
+        res.redirect(redirect);
+    } else {
+        res.redirect('/simple-password-auth/login?error=Invalid password');
+    }
+});
+
+app.get('/simple-password-auth/secure', requireSimplePasswordAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/simple-password-secure.html'));
+});
+
+app.post('/simple-password-auth/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+        }
+        res.redirect('/simple-password-auth');
+    });
+});
+
+app.get('/simple-password-auth/api/password', requireSimplePasswordAuth, (req, res) => {
+    res.json({ password: req.session.simplePassword });
+});
+
+app.get('/simple-password-auth/health', (req, res) => {
+    res.json({ status: 'ok', service: 'simple-password-auth', port: PORT });
 });
 
 app.listen(PORT, () => {
