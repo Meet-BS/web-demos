@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Demos - Authentication & UI Examples</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .demos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--accent-color);
+        }
+
+        .demo-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+
+        .demo-card.basic { --accent-color: #28a745; }
+        .demo-card.form { --accent-color: #ff6b6b; }
+        .demo-card.blocking { --accent-color: #f39c12; }
+        .demo-card.multipage { --accent-color: #9b59b6; }
+
+        .demo-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .demo-card h3 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .demo-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .demo-features {
+            margin-bottom: 2rem;
+        }
+
+        .demo-features ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .demo-features li {
+            padding: 0.3rem 0;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .demo-features li:before {
+            content: "✓";
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .demo-credentials {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--accent-color);
+            font-size: 0.9rem;
+        }
+
+        .demo-credentials strong {
+            color: #333;
+        }
+
+        .demo-btn {
+            display: inline-block;
+            background: var(--accent-color);
+            color: white;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            filter: brightness(110%);
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .quick-start {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .quick-start h2 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .quick-start p {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .command-box {
+            background: #1a1a1a;
+            color: #00ff41;
+            padding: 1.5rem;
+            border-radius: 10px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .command-box::before {
+            content: '$ ';
+            color: #00ff41;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: #333;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .tech-stack {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tech-item {
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .demos-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .demo-card {
+                padding: 2rem;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 3rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Web Demos</h1>
+            <p>Interactive examples of authentication systems and UI patterns. Each demo runs on a different port and showcases different approaches to web security and user experience.</p>
+        </div>
+
+        <div class="demos-grid">
+            <!-- Basic Auth Demo -->
+            <div class="demo-card basic">
+                <div class="status-indicator">Port 3001</div>
+                <span class="demo-icon">🔐</span>
+                <h3>Basic Authentication</h3>
+                <p>HTTP Basic Authentication using browser-native login dialogs. Simple and effective for admin panels and development environments.</p>
+                
+                <div class="demo-credentials">
+                    <strong>Demo Credentials:</strong><br>
+                    Username: <code>admin</code><br>
+                    Password: <code>secret123</code>
+                </div>
+
+                <div class="demo-features">
+                    <ul>
+                        <li>Browser-native authentication dialog</li>
+                        <li>No custom login forms needed</li>
+                        <li>Automatic retry on failure</li>
+                        <li>Logout & redo functionality</li>
+                    </ul>
+                </div>
+
+                <a href="http://localhost:3001" class="demo-btn" target="_blank">
+                    Launch Basic Auth Demo →
+                </a>
+            </div>
+
+            <!-- Form Auth Demo -->
+            <div class="demo-card form">
+                <div class="status-indicator">Port 3002</div>
+                <span class="demo-icon">📝</span>
+                <h3>Form Authentication</h3>
+                <p>Custom login forms with session management. Full control over styling and user experience with proper logout functionality.</p>
+                
+                <div class="demo-credentials">
+                    <strong>Demo Accounts:</strong><br>
+                    <code>admin/password123</code><br>
+                    <code>john/secret456</code><br>
+                    <code>user@example.com/mypassword</code>
+                </div>
+
+                <div class="demo-features">
+                    <ul>
+                        <li>Custom styled login forms</li>
+                        <li>Session-based authentication</li>
+                        <li>Multiple user accounts</li>
+                        <li>Secure logout functionality</li>
+                    </ul>
+                </div>
+
+                <a href="http://localhost:3002" class="demo-btn" target="_blank">
+                    Launch Form Auth Demo →
+                </a>
+            </div>
+
+            <!-- Blocking UI Demo -->
+            <div class="demo-card blocking">
+                <div class="status-indicator">Port 3003</div>
+                <span class="demo-icon">🚫</span>
+                <h3>Blocking UI Overlay</h3>
+                <p>Cookie-based blocking interface for first-time users. Perfect for onboarding, consent forms, and feature announcements.</p>
+                
+                <div class="demo-credentials">
+                    <strong>How it works:</strong><br>
+                    Shows overlay until "existingUser" cookie is set. Great for GDPR consent, age verification, or welcome messages.
+                </div>
+
+                <div class="demo-features">
+                    <ul>
+                        <li>First-time user blocking overlay</li>
+                        <li>Cookie-based persistence</li>
+                        <li>7-day expiration</li>
+                        <li>Reset demo functionality</li>
+                    </ul>
+                </div>
+
+                <a href="http://localhost:3003" class="demo-btn" target="_blank">
+                    Launch Blocking UI Demo →
+                </a>
+            </div>
+
+            <!-- Multi-Page Auth Demo -->
+            <div class="demo-card multipage">
+                <div class="status-indicator">Port 3004</div>
+                <span class="demo-icon">🔄</span>
+                <h3>Multi-Page Authentication</h3>
+                <p>3-step authentication flow with progressive disclosure. Enhanced user experience for complex authentication processes.</p>
+                
+                <div class="demo-credentials">
+                    <strong>Demo Accounts:</strong><br>
+                    <code>user@example.com/password123</code><br>
+                    <code>john/mypassword</code><br>
+                    <code>admin/admin123</code>
+                </div>
+
+                <div class="demo-features">
+                    <ul>
+                        <li>3-step authentication flow</li>
+                        <li>Progressive form disclosure</li>
+                        <li>Session state management</li>
+                        <li>Beautiful step indicators</li>
+                    </ul>
+                </div>
+
+                <a href="http://localhost:3004" class="demo-btn" target="_blank">
+                    Launch Multi-Page Auth →
+                </a>
+            </div>
+        </div>
+
+        <div class="quick-start">
+            <h2>🏃‍♂️ Quick Start</h2>
+            <p>Get all demos running with a single command:</p>
+            
+            <div class="command-box">
+                <button class="copy-btn" onclick="copyCommand()">Copy</button>
+                cd web-demos && npm start
+            </div>
+
+            <p>This will start all four servers simultaneously on ports 3001-3004.</p>
+
+            <div class="tech-stack">
+                <span class="tech-item">Node.js</span>
+                <span class="tech-item">Express.js</span>
+                <span class="tech-item">Sessions</span>
+                <span class="tech-item">Cookies</span>
+                <span class="tech-item">HTML5</span>
+                <span class="tech-item">CSS3</span>
+                <span class="tech-item">JavaScript</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>💡 Use Ctrl+C in terminal to stop all servers</p>
+            <p>🔗 All demos are running locally and safe to explore</p>
+        </div>
+    </div>
+
+    <script>
+        function copyCommand() {
+            const command = 'cd web-demos && npm start';
+            navigator.clipboard.writeText(command).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                }, 2000);
+            });
+        }
+
+        // Check if servers are running by testing the health endpoints
+        function checkServerStatus() {
+            const ports = [3001, 3002, 3003, 3004];
+            const cards = document.querySelectorAll('.demo-card');
+            
+            ports.forEach((port, index) => {
+                fetch(`http://localhost:${port}/health`)
+                    .then(response => {
+                        if (response.ok) {
+                            cards[index].querySelector('.status-indicator').style.background = '#28a745';
+                            cards[index].querySelector('.status-indicator').textContent = `✓ Running on ${port}`;
+                        } else {
+                            throw new Error('Server not healthy');
+                        }
+                    })
+                    .catch(() => {
+                        cards[index].querySelector('.status-indicator').style.background = '#dc3545';
+                        cards[index].querySelector('.status-indicator').textContent = `✗ Not running`;
+                    });
+            });
+        }
+
+        // Check server status on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(checkServerStatus, 1000);
+        });
+    </script>
+</body>
+</html>

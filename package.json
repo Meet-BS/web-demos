@@ -1,0 +1,32 @@
+{
+  "name": "web-demos",
+  "version": "1.0.0",
+  "description": "Collection of web authentication and UI demos: Basic Auth, Form Auth, Cookie Blocking UI, and Multi-Page Auth",
+  "main": "start-all.js",
+  "scripts": {
+    "start": "node start-all.js",
+    "start:basic": "cd basic-auth && node server.js",
+    "start:form": "cd form-auth && node server.js",
+    "start:blocking": "cd blocking-ui && node server.js",
+    "start:multipage": "cd multi-page-auth && node server.js",
+    "install-all": "cd basic-auth && npm install && cd ../form-auth && npm install && cd ../blocking-ui && npm install && cd ../multi-page-auth && npm install",
+    "setup": "npm run install-all && npm start"
+  },
+  "keywords": [
+    "authentication",
+    "express",
+    "basic-auth",
+    "form-auth",
+    "cookie",
+    "session",
+    "multi-page",
+    "web-demos"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "express": "^4.21.2",
+    "express-session": "^1.17.3"
+  }
+}

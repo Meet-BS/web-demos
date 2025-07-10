@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blocking UI Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .icon {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            color: #667eea;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .features {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .features h3 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .features ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .features li {
+            padding: 0.5rem 0;
+            color: #555;
+        }
+
+        .features li:before {
+            content: "🚫";
+            margin-right: 0.5rem;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .demo-info {
+            background: #d4edda;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #28a745;
+        }
+
+        .demo-info strong {
+            color: #155724;
+        }
+
+        .cookie-status {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 2px solid #e9ecef;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-active {
+            background: #28a745;
+        }
+
+        .status-inactive {
+            background: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🚫</div>
+        <h1>Blocking UI Demo</h1>
+        <p>This demonstrates a blocking UI overlay that appears when a specific cookie is not set. Perfect for first-time user experiences or feature gates.</p>
+        
+        <div class="cookie-status" id="cookie-status">
+            <strong>Cookie Status:</strong> <span id="status-text">Checking...</span>
+        </div>
+
+        <div class="demo-info">
+            <strong>How it works:</strong><br>
+            When the "existingUser" cookie is not set, a blocking overlay will appear. Clicking "Continue" sets the cookie and prevents the overlay from showing again.
+        </div>
+
+        <div class="features">
+            <h3>Blocking UI Features:</h3>
+            <ul>
+                <li>Cookie-based state management</li>
+                <li>Full-screen blocking overlay</li>
+                <li>Persistent user preferences</li>
+                <li>First-time user experience</li>
+                <li>Easy cookie management</li>
+                <li>No server-side sessions needed</li>
+            </ul>
+        </div>
+
+        <a href="/content" class="btn">View Content Page 📄</a>
+        <button class="btn btn-danger" onclick="clearCookie()">Clear Cookie (Reset Demo)</button>
+    </div>
+
+    <script>
+        // Check cookie status on page load
+        checkCookieStatus();
+
+        function checkCookieStatus() {
+            const existingUserCookie = getCookie('existingUser');
+            const statusText = document.getElementById('status-text');
+            
+            if (existingUserCookie) {
+                statusText.innerHTML = '<span class="status-indicator status-active"></span>Cookie is set (existingUser=true)';
+            } else {
+                statusText.innerHTML = '<span class="status-indicator status-inactive"></span>Cookie not set - blocking UI will appear';
+            }
+        }
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
+
+        async function clearCookie() {
+            try {
+                const response = await fetch('/clear-cookie', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    checkCookieStatus();
+                    alert('Cookie cleared! The blocking UI will now appear when you visit the content page.');
+                }
+            } catch (error) {
+                console.error('Error clearing cookie:', error);
+                alert('Error clearing cookie. Please try again.');
+            }
+        }
+
+        // Update cookie status every 2 seconds
+        setInterval(checkCookieStatus, 2000);
+    </script>
+</body>
+</html>
