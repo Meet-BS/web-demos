@@ -23,6 +23,8 @@
    Build Command: npm run install-all
    Start Command: npm start
    ```
+   
+   **Important:** The `npm run install-all` command installs dependencies for both the root project and all demo subdirectories.
 
 4. **Environment Variables**
    ```
