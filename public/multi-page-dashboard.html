@@ -162,14 +162,20 @@
     <script>
         // Fetch and display current user
         fetch('/multi-page-auth/api/user')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    // Not authenticated, redirect to login/start page
+                    window.location.href = '/multi-page-auth';
+                    return Promise.reject('Not authenticated');
+                }
+                return response.json();
+            })
             .then(data => {
                 document.getElementById('username').textContent = data.username;
                 document.getElementById('logged-in-user').textContent = data.username;
             })
             .catch(error => {
-                document.getElementById('username').textContent = 'Demo User';
-                document.getElementById('logged-in-user').textContent = 'Demo User';
+                // Do nothing here, as redirect will already have happened
             });
     </script>
 </body>
