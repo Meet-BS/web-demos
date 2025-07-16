@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iframe Isolation Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .info {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 18px 28px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+            text-align: center;
+            max-width: 500px;
+        }
+        iframe {
+            border: 2px solid #2196F3;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 480px;
+            height: 700px;
+            background: #fff;
+            box-shadow: 0 8px 32px rgba(33,150,243,0.12);
+        }
+        .url-input {
+            margin-bottom: 18px;
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            max-width: 480px;
+        }
+        .url-input input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #bbb;
+            font-size: 1rem;
+        }
+        .url-input button {
+            padding: 10px 18px;
+            border-radius: 6px;
+            border: none;
+            background: #2196F3;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .url-input button:hover {
+            background: #1976D2;
+        }
+        #home-icon {
+            position: fixed;
+            top: 18px;
+            left: 18px;
+            z-index: 1000;
+            text-decoration: none;
+        }
+        #home-icon span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(33,150,243,0.18);
+            border: 2.5px solid #2196F3;
+            transition: box-shadow 0.2s, border-color 0.2s;
+        }
+        #home-icon:hover span {
+            box-shadow: 0 4px 16px rgba(33,150,243,0.28);
+            border-color: #1976D2;
+        }
+        #home-icon svg {
+            display: block;
+            margin: 0;
+            padding: 0;
+            width: 26px;
+            height: 26px;
+            stroke: #2196F3;
+            background: none;
+        }
+        #home-icon:hover svg {
+            stroke: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" id="home-icon" title="Back to Home">
+        <span>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2196F3" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M9 21V9h6v12"/></svg>
+        </span>
+    </a>
+    <div class="info">
+        <strong>Iframe Isolation Demo</strong><br>
+        <span>This page loads <b>any demo</b> inside an <b>iframe</b> for isolation and embedded UI testing.<br>Enter a path or use the query parameter <code>?url=</code>.</span>
+        <div id="iframe-warning" style="color:#d32f2f;margin-top:12px;display:none;font-size:1.05rem;"></div>
+    </div>
+    <form class="url-input" onsubmit="event.preventDefault(); loadIframe();">
+        <input type="text" id="iframe-url" placeholder="/form-auth-login.html or /basic-auth" required>
+        <button type="submit">Load</button>
+    </form>
+    <iframe id="demo-iframe" src="" style="display:none;" sandbox="allow-scripts allow-forms allow-same-origin" title="Iframe Demo"></iframe>
+    <script>
+        function getUrlParam(name) {
+            const url = new URL(window.location.href);
+            return url.searchParams.get(name);
+        }
+        function loadIframe(url) {
+            const input = document.getElementById('iframe-url');
+            const iframe = document.getElementById('demo-iframe');
+            let src = url || input.value;
+            if (!src.startsWith('/')) src = '/' + src;
+            iframe.src = src;
+            iframe.style.display = 'block';
+            // Show warning if stick authors or sticky elements may not work
+            setTimeout(() => {
+                let warning = document.getElementById('iframe-warning');
+                try {
+                    const doc = iframe.contentDocument || iframe.contentWindow.document;
+                    const sticky = doc.querySelector('[style*="position:sticky"], .sticky, [class*="sticky"]');
+                    if (sticky) {
+                        warning.textContent = '⚠ Sticky elements (like sticky authors) may not work as expected inside an iframe due to browser limitations.';
+                        warning.style.display = 'block';
+                    } else {
+                        warning.style.display = 'none';
+                    }
+                } catch (e) {
+                    warning.textContent = '⚠ Sticky elements may not work as expected inside an iframe.';
+                    warning.style.display = 'block';
+                }
+            }, 1000);
+        }
+        // Load from query param if present
+        const paramUrl = getUrlParam('url');
+        if (paramUrl) {
+            document.getElementById('iframe-url').value = paramUrl;
+            loadIframe(paramUrl);
+        }
+    </script>
+</body>
+</html>
