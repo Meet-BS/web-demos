@@ -419,6 +419,14 @@ app.get('/simple-password-auth/health', (req, res) => {
     res.json({ status: 'ok', service: 'simple-password-auth', port: PORT });
 });
 
+// Route to simulate a slow-loading page
+app.get('/slow', (req, res) => {
+    const delay = parseInt(req.query.delay) || 30000; // Default delay is 30 seconds
+    setTimeout(() => {
+        res.send(`<h1>Slow Page Loaded with delay ${delay} milliseconds</h1>`);
+    }, delay);
+});
+
 app.listen(PORT, () => {
     console.log(`Web Demos unified server running at http://localhost:${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);

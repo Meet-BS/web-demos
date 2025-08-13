@@ -80,6 +80,7 @@
         .demo-card.blocking { --accent-color: #f39c12; }
         .demo-card.multipage { --accent-color: #9b59b6; }
         .demo-card.simple { --accent-color: #ff9800; }
+        .demo-card.slow { --accent-color: #3498db; }
 
         .demo-icon {
             font-size: 4rem;
@@ -337,6 +338,32 @@
                 </a>
                 <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=multi-page-dashboard.html" class="demo-btn" style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
             </div>
+
+            <!-- Slow Loading Page Demo -->
+            <div class="demo-card slow">
+                <div class="status-indicator">Port 3000</div>
+                <span class="demo-icon">⏳</span>
+                <h3>Slow Loading Page</h3>
+                <p>Simulates a slow-loading page with adjustable delay. Useful for testing loading spinners and timeout behaviors.</p>
+
+                <div class="demo-credentials">
+                    <strong>How it works:</strong><br>
+                    Add a delay parameter in milliseconds, e.g., <code>?delay=10000</code> for 10 seconds.
+                </div>
+
+                <div class="demo-features">
+                    <ul>
+                        <li>Adjustable delay via query parameter</li>
+                        <li>Default delay of 30 seconds</li>
+                        <li>Simple HTML response</li>
+                    </ul>
+                </div>
+
+                <a href="/slow" class="demo-btn">
+                    Launch Slow Loading Page Demo →
+                </a>
+                <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=slow" class="demo-btn" style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
+            </div>
             <!-- End Simple Password Auth Demo -->
         </div>
         <!-- End of .demos-grid -->
@@ -361,7 +388,8 @@
                 { name: 'Form Auth', path: '/form-auth/health' },
                 { name: 'Blocking UI', path: '/blocking-ui/health' },
                 { name: 'Multi-Page Auth', path: '/multi-page-auth/health' },
-                { name: 'Simple Password Auth', path: '/simple-password-auth/health' }
+                { name: 'Simple Password Auth', path: '/simple-password-auth/health' },
+                { name: 'Slow Loading Page', path: '/slow/health' }
             ];
             
             const cards = document.querySelectorAll('.demo-card');
