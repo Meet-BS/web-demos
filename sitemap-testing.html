@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sitemap Auth Testing - Web Demos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #6c5ce7;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #6c5ce7;
+        }
+
+        .section h3 {
+            color: #333;
+            font-size: 1.4rem;
+            margin: 1.5rem 0 1rem 0;
+        }
+
+        .section p, .section li {
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+        }
+
+        .section ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .endpoint-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .endpoint-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 4px solid #6c5ce7;
+        }
+
+        .endpoint-card h4 {
+            color: #6c5ce7;
+            margin-bottom: 0.5rem;
+        }
+
+        .endpoint-card .url {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 5px;
+            margin: 0.5rem 0;
+            word-break: break-all;
+        }
+
+        .test-matrix {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .test-matrix table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .test-matrix th, .test-matrix td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .test-matrix th {
+            background: #6c5ce7;
+            color: white;
+            font-weight: 600;
+        }
+
+        .test-matrix tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .status-code {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .status-401 { background: #ffebee; color: #c62828; }
+        .status-200 { background: #e8f5e8; color: #2e7d32; }
+
+        .back-link {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .back-link a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        .demo-credentials {
+            background: #e3f2fd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ Sitemap Auth Testing</h1>
+            <p>Comprehensive testing suite for XML sitemap authentication scenarios</p>
+        </div>
+
+        <!-- Overview Section -->
+        <div class="section">
+            <h2>🎯 Overview</h2>
+            <p>This testing suite demonstrates four different authentication scenarios for XML sitemaps:</p>
+            <ul>
+                <li><strong>Root auth, children open:</strong> Index requires auth, individual sitemaps are public</li>
+                <li><strong>Root auth, children auth:</strong> Both index and individual sitemaps require auth</li>
+                <li><strong>Root open, children open:</strong> All sitemaps are publicly accessible</li>
+                <li><strong>Root open, children auth:</strong> Index is public, individual sitemaps require auth</li>
+            </ul>
+            
+            <div class="demo-credentials">
+                <strong>Authentication Credentials:</strong><br>
+                Username: <code>admin</code> | Password: <code>admin</code><br>
+                <small>Also works with: test@meet.com/Meet@123, meetUser#/meetPass, Meet/(^ O^)</small>
+            </div>
+        </div>
+
+        <!-- Multi-Scenario Endpoints -->
+        <div class="section">
+            <h2>🔗 Multi-Scenario Endpoints</h2>
+            <p>All four authentication scenarios are available simultaneously without server restarts:</p>
+            
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <h4>Root-Only Protection</h4>
+                    <p>Index requires auth, children are open</p>
+                    <div class="url">/sitemap-scenarios/root-only/sitemap-index.xml</div>
+                    <div class="url">/sitemap-scenarios/root-only/pages.xml</div>
+                </div>
+                
+                <div class="endpoint-card">
+                    <h4>Both Protected</h4>
+                    <p>Both index and children require auth</p>
+                    <div class="url">/sitemap-scenarios/both/sitemap-index.xml</div>
+                    <div class="url">/sitemap-scenarios/both/pages.xml</div>
+                </div>
+                
+                <div class="endpoint-card">
+                    <h4>None Protected</h4>
+                    <p>All endpoints are publicly accessible</p>
+                    <div class="url">/sitemap-scenarios/none/sitemap-index.xml</div>
+                    <div class="url">/sitemap-scenarios/none/pages.xml</div>
+                </div>
+                
+                <div class="endpoint-card">
+                    <h4>Children-Only Protection</h4>
+                    <p>Index is open, children require auth</p>
+                    <div class="url">/sitemap-scenarios/children-only/sitemap-index.xml</div>
+                    <div class="url">/sitemap-scenarios/children-only/pages.xml</div>
+                </div>
+            </div>
+
+            <h3>Available Child Groups</h3>
+            <p>Each scenario supports these child sitemap groups:</p>
+            <ul>
+                <li><code>pages.xml</code> - Main site pages (/, /blocking-ui, /slow, /iframe-demo.html)</li>
+                <li><code>auth-core.xml</code> - Authentication demos (/basic-auth/, /form-auth, etc.)</li>
+                <li><code>auth-flows.xml</code> - Authentication flow pages (/form-auth/login, etc.)</li>
+            </ul>
+        </div>
+
+        <!-- Testing Matrix -->
+        <div class="section">
+            <h2>🧪 Expected Test Results</h2>
+            <p>This matrix shows expected HTTP status codes for each scenario:</p>
+            
+            <div class="test-matrix">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Root (No Auth)</th>
+                            <th>Root (With Auth)</th>
+                            <th>Child (No Auth)</th>
+                            <th>Child (With Auth)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>root-only</strong></td>
+                            <td><span class="status-code status-401">401</span></td>
+                            <td><span class="status-code status-200">200</span></td>
+                            <td><span class="status-code status-200">200</span></td>
+                            <td><span class="status-code status-200">200</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>both</strong></td>
+                            <td><span class="status-code status-401">401</span></td>
+                            <td><span class="status-code status-200">200</span></td>
+                            <td><span class="status-code status-401">401</span></td>
+                            <td><span class="status-code status-200">200</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>none</strong></td>
+                            <td><span class="status-code status-200">200</span></td>
+                            <td><span class="status-code status-200">200</span></td>
+                            <td><span class="status-code status-200">200</span></td>
+                            <td><span class="status-code status-200">200</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>children-only</strong></td>
+                            <td><span class="status-code status-200">200</span></td>
+                            <td><span class="status-code status-200">200</span></td>
+                            <td><span class="status-code status-401">401</span></td>
+                            <td><span class="status-code status-200">200</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Manual Testing -->
+        <div class="section">
+            <h2>🔧 Manual Testing Commands</h2>
+            
+            <h3>Individual Scenario Testing</h3>
+            <p>Test each scenario manually using curl commands:</p>
+            
+            <div class="code-block">
+# Root-Only Scenario (root auth, children open)
+curl -i /sitemap-scenarios/root-only/sitemap-index.xml      # Should get 401
+curl -i -u admin:admin /sitemap-scenarios/root-only/sitemap-index.xml  # Should get 200
+curl -i /sitemap-scenarios/root-only/pages.xml             # Should get 200
+
+# Both Protected Scenario
+curl -i /sitemap-scenarios/both/sitemap-index.xml          # Should get 401
+curl -i -u admin:admin /sitemap-scenarios/both/sitemap-index.xml      # Should get 200
+curl -i /sitemap-scenarios/both/pages.xml                  # Should get 401
+curl -i -u admin:admin /sitemap-scenarios/both/pages.xml   # Should get 200
+
+# None Protected Scenario
+curl -i /sitemap-scenarios/none/sitemap-index.xml          # Should get 200
+curl -i /sitemap-scenarios/none/pages.xml                  # Should get 200
+
+# Children-Only Scenario
+curl -i /sitemap-scenarios/children-only/sitemap-index.xml # Should get 200
+curl -i /sitemap-scenarios/children-only/pages.xml         # Should get 401
+curl -i -u admin:admin /sitemap-scenarios/children-only/pages.xml     # Should get 200</div>
+
+            <h3>Automated Testing Script</h3>
+            <p>Copy and paste this script to test all scenarios at once:</p>
+            
+            <div class="code-block">
+for mode in root-only both none children-only; do
+  echo "=== Testing $mode ==="
+  echo "Root without auth: $(curl -o /dev/null -s -w '%{http_code}' /sitemap-scenarios/$mode/sitemap-index.xml)"
+  echo "Root with auth: $(curl -o /dev/null -s -u admin:admin -w '%{http_code}' /sitemap-scenarios/$mode/sitemap-index.xml)"
+  echo "Child without auth: $(curl -o /dev/null -s -w '%{http_code}' /sitemap-scenarios/$mode/pages.xml)"
+  echo "Child with auth: $(curl -o /dev/null -s -u admin:admin -w '%{http_code}' /sitemap-scenarios/$mode/pages.xml)"
+  echo
+done</div>
+        </div>
+
+        <!-- Static Sitemap Endpoints -->
+        <div class="section">
+            <h2>📁 Static Sitemap Endpoints</h2>
+            <p>Additional static sitemap files are also available (auth controlled by SITEMAP_AUTH_MODE environment variable):</p>
+            
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <h4>Master Index</h4>
+                    <div class="url">/sitemap-index.xml</div>
+                </div>
+                <div class="endpoint-card">
+                    <h4>Page Groups</h4>
+                    <div class="url">/sitemaps/sitemap-pages.xml</div>
+                </div>
+                <div class="endpoint-card">
+                    <h4>Auth Core</h4>
+                    <div class="url">/sitemaps/sitemap-auth-core.xml</div>
+                </div>
+                <div class="endpoint-card">
+                    <h4>Auth Flows</h4>
+                    <div class="url">/sitemaps/sitemap-auth-flows.xml</div>
+                </div>
+            </div>
+
+            <p><strong>Environment Variable Modes:</strong></p>
+            <ul>
+                <li><code>SITEMAP_AUTH_MODE=both</code> - Both root and children require auth</li>
+                <li><code>SITEMAP_AUTH_MODE=root-only</code> - Only root requires auth</li>
+                <li><code>SITEMAP_AUTH_MODE=children-only</code> - Only children require auth</li>
+                <li><code>SITEMAP_AUTH_MODE=none</code> - No authentication required (default)</li>
+            </ul>
+        </div>
+
+        <!-- robots.txt -->
+        <div class="section">
+            <h2>🤖 Robots.txt</h2>
+            <p>The robots.txt file points to the main sitemap index:</p>
+            <div class="code-block">
+User-agent: *
+Disallow:
+
+Sitemap: https://web-demos-9iun.onrender.com/sitemap-index.xml</div>
+            <p><strong>Access:</strong> <a href="/robots.txt" target="_blank">/robots.txt</a></p>
+        </div>
+
+        <div class="back-link">
+            <a href="/">← Back to Main Demos</a>
+        </div>
+    </div>
+</body>
+</html>

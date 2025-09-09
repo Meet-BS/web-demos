@@ -35,7 +35,150 @@ if (isProduction) {
 
 app.use(session(sessionConfig));
 
-// Serve static files
+// Sitemap auth modes
+// Supported: both | root-only | children-only | none
+// Maps to scenarios:
+//  both           => root auth, children auth
+//  root-only      => root auth, children open
+//  children-only  => root open, children auth
+//  none (default) => root open, children open
+const SITEMAP_AUTH_MODE = (process.env.SITEMAP_AUTH_MODE || 'none').toLowerCase();
+const VALID_SITEMAP_MODES = new Set(['both','root-only','children-only','none']);
+if (!VALID_SITEMAP_MODES.has(SITEMAP_AUTH_MODE)) {
+    console.warn(`[sitemaps] Invalid SITEMAP_AUTH_MODE='${SITEMAP_AUTH_MODE}' defaulting to 'none'`);
+}
+
+function decodeBasicAuth(header) {
+    try {
+        const b64 = header.split(' ')[1];
+        const raw = Buffer.from(b64, 'base64').toString('utf8');
+        const sep = raw.indexOf(':');
+        if (sep === -1) return [];
+        return [raw.slice(0, sep), raw.slice(sep + 1)];
+    } catch { return []; }
+}
+
+function sitemapNeedsAuth(pathname) {
+    const isRoot = pathname === '/sitemap-index.xml';
+    const isChild = pathname.startsWith('/sitemaps/');
+    switch (SITEMAP_AUTH_MODE) {
+        case 'both': return isRoot || isChild;
+        case 'root-only': return isRoot;
+        case 'children-only': return isChild;
+        case 'none':
+        default: return false;
+    }
+}
+
+function sitemapAuthConditional(req, res, next) {
+    if (sitemapNeedsAuth(req.path)) {
+        const auth = req.headers.authorization;
+        if (!auth || !auth.startsWith('Basic ')) {
+            res.setHeader('WWW-Authenticate', 'Basic realm="Sitemaps"');
+            return res.status(401).send('Authentication required');
+        }
+        const [u, p] = decodeBasicAuth(auth);
+        if (!u || !p || !users[u] || users[u] !== p) {
+            res.setHeader('WWW-Authenticate', 'Basic realm="Sitemaps"');
+            return res.status(401).send('Invalid credentials');
+        }
+    }
+    return next();
+}
+
+app.use(sitemapAuthConditional);
+console.log(`[sitemaps] Auth mode active: ${SITEMAP_AUTH_MODE}`);
+
+// ============================================================================
+// Multi-scenario sitemap demo (all four auth patterns at once)
+// Base paths:
+//  /sitemap-scenarios/both/sitemap-index.xml            (root & children auth)
+//  /sitemap-scenarios/root-only/sitemap-index.xml       (root auth, children open)
+//  /sitemap-scenarios/children-only/sitemap-index.xml   (root open, children auth)
+//  /sitemap-scenarios/none/sitemap-index.xml            (root & children open)
+// Child group endpoints:
+//  /sitemap-scenarios/<mode>/<group>.xml  where <group> in pages | auth-core | auth-flows
+// Auth rules applied per mode individually, independent from global SITEMAP_AUTH_MODE.
+// ============================================================================
+
+const SCENARIO_GROUPS = {
+    'pages': [ '/', '/blocking-ui', '/slow', '/iframe-demo.html' ],
+    'auth-core': [ '/basic-auth/', '/form-auth', '/simple-password-auth', '/multi-page-auth' ],
+    'auth-flows': [ '/form-auth/login', '/simple-password-auth/login', '/multi-page-auth/dashboard', '/multi-page-auth/step2' ]
+};
+const SCENARIO_MODES = ['both','root-only','children-only','none'];
+
+function scenarioNeedsAuth(mode, isRoot, isChild) {
+    switch(mode){
+        case 'both': return isRoot || isChild;
+        case 'root-only': return isRoot;
+        case 'children-only': return isChild;
+        case 'none': default: return false;
+    }
+}
+
+function buildScenarioIndex(baseUrl, mode) {
+    // List all groups for this mode
+    const items = Object.keys(SCENARIO_GROUPS).map(g=>`  <sitemap>\n    <loc>${baseUrl}/sitemap-scenarios/${mode}/${g}.xml</loc>\n  </sitemap>`).join('\n');
+    return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${items}\n</sitemapindex>`;
+}
+
+function buildScenarioGroup(baseUrl, group) {
+    const paths = SCENARIO_GROUPS[group] || [];
+    const items = paths.map(p=>`  <sitemap><loc>${baseUrl}${p}</loc></sitemap>`).join('\n');
+    return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${items}\n</sitemapindex>`;
+}
+
+function getReqBase(req){
+    const proto = req.headers['x-forwarded-proto']?.split(',')[0].trim() || req.protocol || 'http';
+    return `${proto}://${req.get('host')}`;
+}
+
+function enforceScenarioAuth(req, res, mode, isRoot, isChild){
+    if(!scenarioNeedsAuth(mode, isRoot, isChild)) return true;
+    const auth = req.headers.authorization;
+    if(!auth || !auth.startsWith('Basic ')){
+        res.setHeader('WWW-Authenticate', 'Basic realm="Sitemaps Scenario"');
+        res.status(401).send('Authentication required');
+        return false;
+    }
+    const b64 = auth.split(' ')[1];
+    try {
+        const raw = Buffer.from(b64,'base64').toString('utf8');
+        const idx = raw.indexOf(':');
+        if(idx === -1) throw new Error();
+        const user = raw.slice(0,idx); const pass = raw.slice(idx+1);
+        if(!users[user] || users[user] !== pass) throw new Error();
+        return true;
+    } catch {
+        res.setHeader('WWW-Authenticate', 'Basic realm="Sitemaps Scenario"');
+        res.status(401).send('Invalid credentials');
+        return false;
+    }
+}
+
+// Scenario root indexes
+app.get('/sitemap-scenarios/:mode/sitemap-index.xml', (req,res)=>{
+    const { mode } = req.params;
+    if(!SCENARIO_MODES.includes(mode)) return res.status(404).send('Invalid mode');
+    if(!enforceScenarioAuth(req,res,mode,true,false)) return;
+    const xml = buildScenarioIndex(getReqBase(req), mode);
+    res.type('application/xml').send(xml);
+});
+
+// Scenario child groups
+app.get('/sitemap-scenarios/:mode/:group.xml', (req,res)=>{
+    const { mode, group } = req.params;
+    if(!SCENARIO_MODES.includes(mode)) return res.status(404).send('Invalid mode');
+    if(!SCENARIO_GROUPS[group]) return res.status(404).send('Invalid group');
+    if(!enforceScenarioAuth(req,res,mode,false,true)) return;
+    const xml = buildScenarioGroup(getReqBase(req), group);
+    res.type('application/xml').send(xml);
+});
+
+console.log('[sitemaps] Multi-scenario endpoints mounted at /sitemap-scenarios');
+
+// Serve static files (after sitemap auth middleware so sitemaps are protected)
 app.use(express.static('.'));
 app.use(express.static('public'));
 
