@@ -4,9 +4,7 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 
 const app = express();
-// Trust reverse proxy headers (needed for correct host/proto behind load balancers/CDNs)
-app.set('trust proxy', true);
-// Allow overriding the port via environment variable; default 3001
+// Simple configurable port (no dynamic domain rewriting)
 const PORT = process.env.PORT || 3001;
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -41,108 +39,7 @@ app.use(session(sessionConfig));
 app.use(express.static('.'));
 app.use(express.static('public'));
 
-// ============================================================================
-// Dynamic Sitemap & Robots Generation
-// Set SITEMAP_BASE_URL env var (e.g. https://demo.example) to override host
-// NOTE: User requested <sitemapindex>/<sitemap> for individual pages (non-standard)
-// ============================================================================
-function getBaseUrl(req) {
-    const candidates = [
-        process.env.SITEMAP_BASE_URL,
-        process.env.VERCEL_URL,
-        process.env.RENDER_EXTERNAL_URL,
-        process.env.DEPLOY_URL
-    ].filter(Boolean);
-
-    let fromEnv = candidates.find(Boolean);
-    if (fromEnv) {
-        fromEnv = fromEnv.replace('{PORT}', PORT).replace(/\/$/, '');
-        if (!/^https?:\/\//i.test(fromEnv)) {
-            // Assume https for platform-provided hostnames
-            fromEnv = 'https://' + fromEnv;
-        }
-        return fromEnv;
-    }
-
-    const protoHeader = req.headers['x-forwarded-proto'];
-    const proto = (protoHeader ? protoHeader.split(',')[0].trim() : (req.protocol || 'http'));
-    let host = (req.headers['x-forwarded-host'] || req.get('host') || '').split(',')[0].trim();
-
-    // Append port only if not default and not already present
-    if (host && !host.includes(':')) {
-        const portNum = Number(PORT);
-        const needPort = (proto === 'http' && portNum !== 80) || (proto === 'https' && portNum !== 443);
-        if (needPort) host = `${host}:${portNum}`;
-    }
-
-    // Fallback warning if still localhost in a supposed prod env
-    if (isProduction && /localhost/i.test(host)) {
-        console.warn('[sitemap] WARNING: resolved host is localhost in production. Set SITEMAP_BASE_URL to fix.');
-    }
-    return `${proto}://${host}`;
-}
-
-// Lightweight debug endpoint (can be removed later)
-app.get('/debug/sitemap-base', (req, res) => {
-    res.json({ baseUrl: getBaseUrl(req), host: req.get('host'), xfHost: req.headers['x-forwarded-host'], xfProto: req.headers['x-forwarded-proto'] });
-});
-
-// Define logical sitemap groupings (each array holds page paths)
-const sitemapGroups = {
-    'sitemap-pages': [
-        '/',
-        '/blocking-ui',
-        '/slow',
-        '/iframe-demo.html'
-    ],
-    'sitemap-auth-core': [
-        '/basic-auth/',
-        '/form-auth',
-        '/simple-password-auth',
-        '/multi-page-auth'
-    ],
-    'sitemap-auth-flows': [
-        '/form-auth/login',
-        '/simple-password-auth/login',
-        '/multi-page-auth/dashboard',
-        '/multi-page-auth/step2'
-    ]
-};
-
-const sitemapGroupNames = Object.keys(sitemapGroups);
-
-function buildPageSitemapXML(baseUrl, paths) {
-    // Non-standard per user instruction: use <sitemapindex>/<sitemap> for pages
-    const items = paths.map(p => `  <sitemap><loc>${baseUrl}${p}</loc></sitemap>`).join('\n');
-    return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${items}\n</sitemapindex>`;
-}
-
-function buildMasterIndexXML(baseUrl) {
-    const items = sitemapGroupNames.map(name => `  <sitemap>\n    <loc>${baseUrl}/sitemaps/${name}.xml</loc>\n  </sitemap>`).join('\n');
-    return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${items}\n</sitemapindex>`;
-}
-
-// Master sitemap index
-app.get('/sitemap-index.xml', (req, res) => {
-    const baseUrl = getBaseUrl(req);
-    console.log('[sitemap] master index request host=%s baseUrl=%s', req.get('host'), baseUrl);
-    res.type('application/xml').send(buildMasterIndexXML(baseUrl));
-});
-
-// Individual group sitemaps
-app.get('/sitemaps/:name.xml', (req, res) => {
-    const { name } = req.params;
-    if (!sitemapGroups[name]) return res.status(404).send('Not Found');
-    const baseUrl = getBaseUrl(req);
-    console.log('[sitemap] group=%s host=%s baseUrl=%s', name, req.get('host'), baseUrl);
-    res.type('application/xml').send(buildPageSitemapXML(baseUrl, sitemapGroups[name]));
-});
-
-// Dynamic robots referencing master index
-app.get('/robots.txt', (req, res) => {
-    const baseUrl = getBaseUrl(req);
-    res.type('text/plain').send(`User-agent: *\nDisallow:\n\nSitemap: ${baseUrl}/sitemap-index.xml\n`);
-});
+// (Removed dynamic sitemap generation; using static XML files instead)
 
 // Demo users for embedded demos
 const users = {

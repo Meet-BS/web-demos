@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap><loc>http://localhost:3000/form-auth/login</loc></sitemap>
-  <sitemap><loc>http://localhost:3000/simple-password-auth/login</loc></sitemap>
-  <sitemap><loc>http://localhost:3000/multi-page-auth/dashboard</loc></sitemap>
-  <sitemap><loc>http://localhost:3000/multi-page-auth/step2</loc></sitemap>
+  <sitemap><loc>https://web-demos-9iun.onrender.com/form-auth/login</loc></sitemap>
+  <sitemap><loc>https://web-demos-9iun.onrender.com/simple-password-auth/login</loc></sitemap>
+  <sitemap><loc>https://web-demos-9iun.onrender.com/multi-page-auth/dashboard</loc></sitemap>
+  <sitemap><loc>https://web-demos-9iun.onrender.com/multi-page-auth/step2</loc></sitemap>
 </sitemapindex>
