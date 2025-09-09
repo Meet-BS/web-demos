@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 
 const app = express();
+// Allow overriding the port via environment variable; default 3001 (was previously 3000)
 const PORT = process.env.PORT || 3000;
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -37,6 +38,86 @@ app.use(session(sessionConfig));
 // Serve static files
 app.use(express.static('.'));
 app.use(express.static('public'));
+
+// ============================================================================
+// Dynamic Sitemap & Robots Generation
+// Set SITEMAP_BASE_URL env var (e.g. https://demo.example) to override host
+// NOTE: User requested <sitemapindex>/<sitemap> for individual pages (non-standard)
+// ============================================================================
+function getBaseUrl(req) {
+    let env = process.env.SITEMAP_BASE_URL;
+    // Support placeholder {PORT} in env var for flexibility
+    if (env) {
+        return env.replace('{PORT}', PORT).replace(/\/$/, '');
+    }
+    const protoHeader = req.headers['x-forwarded-proto'];
+    const proto = (protoHeader ? protoHeader.split(',')[0] : (req.protocol || 'http'));
+    // Prefer x-forwarded-host if behind proxy (e.g., load balancer)
+    let host = req.headers['x-forwarded-host'] || req.get('host');
+    // If host missing port and we're on a non-default port, append it
+    if (host && !host.includes(':')) {
+        const needsPort = (proto === 'http' && Number(PORT) !== 80) || (proto === 'https' && Number(PORT) !== 443);
+        if (needsPort) host = `${host}:${PORT}`;
+    }
+    return `${proto}://${host}`;
+}
+
+// Define logical sitemap groupings (each array holds page paths)
+const sitemapGroups = {
+    'sitemap-pages': [
+        '/',
+        '/blocking-ui',
+        '/slow',
+        '/iframe-demo.html'
+    ],
+    'sitemap-auth-core': [
+        '/basic-auth/',
+        '/form-auth',
+        '/simple-password-auth',
+        '/multi-page-auth'
+    ],
+    'sitemap-auth-flows': [
+        '/form-auth/login',
+        '/simple-password-auth/login',
+        '/multi-page-auth/dashboard',
+        '/multi-page-auth/step2'
+    ]
+};
+
+const sitemapGroupNames = Object.keys(sitemapGroups);
+
+function buildPageSitemapXML(baseUrl, paths) {
+    // Non-standard per user instruction: use <sitemapindex>/<sitemap> for pages
+    const items = paths.map(p => `  <sitemap><loc>${baseUrl}${p}</loc></sitemap>`).join('\n');
+    return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${items}\n</sitemapindex>`;
+}
+
+function buildMasterIndexXML(baseUrl) {
+    const items = sitemapGroupNames.map(name => `  <sitemap>\n    <loc>${baseUrl}/sitemaps/${name}.xml</loc>\n  </sitemap>`).join('\n');
+    return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${items}\n</sitemapindex>`;
+}
+
+// Master sitemap index
+app.get('/sitemap-index.xml', (req, res) => {
+    const baseUrl = getBaseUrl(req);
+    console.log('[sitemap] master index request host=%s baseUrl=%s', req.get('host'), baseUrl);
+    res.type('application/xml').send(buildMasterIndexXML(baseUrl));
+});
+
+// Individual group sitemaps
+app.get('/sitemaps/:name.xml', (req, res) => {
+    const { name } = req.params;
+    if (!sitemapGroups[name]) return res.status(404).send('Not Found');
+    const baseUrl = getBaseUrl(req);
+    console.log('[sitemap] group=%s host=%s baseUrl=%s', name, req.get('host'), baseUrl);
+    res.type('application/xml').send(buildPageSitemapXML(baseUrl, sitemapGroups[name]));
+});
+
+// Dynamic robots referencing master index
+app.get('/robots.txt', (req, res) => {
+    const baseUrl = getBaseUrl(req);
+    res.type('text/plain').send(`User-agent: *\nDisallow:\n\nSitemap: ${baseUrl}/sitemap-index.xml\n`);
+});
 
 // Demo users for embedded demos
 const users = {

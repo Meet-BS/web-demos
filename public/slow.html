@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slow Loading Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⏳ Slow Loading Page</h1>
+        <p>This page simulates a slow-loading response. Adjust the delay using the <code>?delay</code> query parameter.</p>
+        <p>Default delay is 30 seconds.</p>
+    </div>
+    <script>
+        // Extract delay parameter from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const delay = urlParams.get('delay') || 30000; // Default to 30 seconds
+
+        // Display the delay on the page
+        const container = document.querySelector('.container');
+        const delayInfo = document.createElement('p');
+        delayInfo.textContent = `Current delay: ${delay} milliseconds`;
+        container.appendChild(delayInfo);
+    </script>
+</body>
+</html>
