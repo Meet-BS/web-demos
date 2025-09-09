@@ -4,8 +4,10 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 
 const app = express();
-// Allow overriding the port via environment variable; default 3001 (was previously 3000)
-const PORT = process.env.PORT || 3000;
+// Trust reverse proxy headers (needed for correct host/proto behind load balancers/CDNs)
+app.set('trust proxy', true);
+// Allow overriding the port via environment variable; default 3001
+const PORT = process.env.PORT || 3001;
 const isProduction = process.env.NODE_ENV === 'production';
 
 // Middleware
@@ -45,22 +47,45 @@ app.use(express.static('public'));
 // NOTE: User requested <sitemapindex>/<sitemap> for individual pages (non-standard)
 // ============================================================================
 function getBaseUrl(req) {
-    let env = process.env.SITEMAP_BASE_URL;
-    // Support placeholder {PORT} in env var for flexibility
-    if (env) {
-        return env.replace('{PORT}', PORT).replace(/\/$/, '');
+    const candidates = [
+        process.env.SITEMAP_BASE_URL,
+        process.env.VERCEL_URL,
+        process.env.RENDER_EXTERNAL_URL,
+        process.env.DEPLOY_URL
+    ].filter(Boolean);
+
+    let fromEnv = candidates.find(Boolean);
+    if (fromEnv) {
+        fromEnv = fromEnv.replace('{PORT}', PORT).replace(/\/$/, '');
+        if (!/^https?:\/\//i.test(fromEnv)) {
+            // Assume https for platform-provided hostnames
+            fromEnv = 'https://' + fromEnv;
+        }
+        return fromEnv;
     }
+
     const protoHeader = req.headers['x-forwarded-proto'];
-    const proto = (protoHeader ? protoHeader.split(',')[0] : (req.protocol || 'http'));
-    // Prefer x-forwarded-host if behind proxy (e.g., load balancer)
-    let host = req.headers['x-forwarded-host'] || req.get('host');
-    // If host missing port and we're on a non-default port, append it
+    const proto = (protoHeader ? protoHeader.split(',')[0].trim() : (req.protocol || 'http'));
+    let host = (req.headers['x-forwarded-host'] || req.get('host') || '').split(',')[0].trim();
+
+    // Append port only if not default and not already present
     if (host && !host.includes(':')) {
-        const needsPort = (proto === 'http' && Number(PORT) !== 80) || (proto === 'https' && Number(PORT) !== 443);
-        if (needsPort) host = `${host}:${PORT}`;
+        const portNum = Number(PORT);
+        const needPort = (proto === 'http' && portNum !== 80) || (proto === 'https' && portNum !== 443);
+        if (needPort) host = `${host}:${portNum}`;
+    }
+
+    // Fallback warning if still localhost in a supposed prod env
+    if (isProduction && /localhost/i.test(host)) {
+        console.warn('[sitemap] WARNING: resolved host is localhost in production. Set SITEMAP_BASE_URL to fix.');
     }
     return `${proto}://${host}`;
 }
+
+// Lightweight debug endpoint (can be removed later)
+app.get('/debug/sitemap-base', (req, res) => {
+    res.json({ baseUrl: getBaseUrl(req), host: req.get('host'), xfHost: req.headers['x-forwarded-host'], xfProto: req.headers['x-forwarded-proto'] });
+});
 
 // Define logical sitemap groupings (each array holds page paths)
 const sitemapGroups = {
