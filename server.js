@@ -373,8 +373,20 @@ app.post('/form-auth/login', (req, res) => {
     }
 });
 
+
 app.get('/form-auth/secure', requireFormAuth, (req, res) => {
     res.sendFile(path.join(__dirname, 'public/form-auth-secure.html'));
+});
+
+// New secure pages behind form auth
+app.get('/form-auth/secure-1', requireFormAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/form-auth-secure-1.html'));
+});
+app.get('/form-auth/secure-2', requireFormAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/form-auth-secure-2.html'));
+});
+app.get('/form-auth/secure-3', requireFormAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/form-auth-secure-3.html'));
 });
 
 app.post('/form-auth/logout', (req, res) => {
