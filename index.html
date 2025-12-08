@@ -394,6 +394,15 @@
                 </a>
             </div>
             <!-- End Sitemap Testing Demo -->
+            <!-- PDF Links Card (Dynamic) -->
+            <div class="demo-card" style="--accent-color: #e84393;" id="pdf-card">
+                <span class="demo-icon">📄</span>
+                <h3>PDF Resources</h3>
+                <p>Access useful PDF documents for reference and download.</p>
+                <div class="demo-features">
+                    <ul id="pdf-links-list"></ul>
+                </div>
+            </div>
         </div>
         <!-- End of .demos-grid -->
                 <footer style="text-align:center;color:#fff;opacity:0.9;margin-top:2rem;font-size:0.9rem;line-height:1.6;">
@@ -452,6 +461,20 @@
         // Check server status on page load
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(checkServerStatus, 1000);
+            // Dynamically render PDF links
+            const pdfCount = 10; // Change this value for more/less PDFs
+            const pdfLinksList = document.getElementById('pdf-links-list');
+            if (pdfLinksList) {
+                for (let i = 1; i <= pdfCount; i++) {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = `/pdfs/doc${i}.pdf`;
+                    a.target = '_blank';
+                    a.textContent = `Document ${i}`;
+                    li.appendChild(a);
+                    pdfLinksList.appendChild(li);
+                }
+            }
         });
     </script>
 </body>
