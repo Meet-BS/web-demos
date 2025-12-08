@@ -585,6 +585,22 @@ app.get('/slow', (req, res) => {
     }, delay);
 });
 
+// =============================================================================
+// Dynamic PDF Generation for /pdfs/docN.pdf
+// =============================================================================
+const PDF_TEMPLATE = (docNum) => `
+%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R >>\nendobj\n4 0 obj\n<< /Length 44 >>\nstream\nBT\n/F1 24 Tf\n100 700 Td\n(Hello from Document ${docNum}!) Tj\nET\nendstream\nendobj\n5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\nxref\n0 6\n0000000000 65535 f \n0000000010 00000 n \n0000000062 00000 n \n0000000111 00000 n \n0000000192 00000 n \n0000000282 00000 n \ntrailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n362\n%%EOF\n`;
+
+app.get('/pdfs/doc:docNum.pdf', (req, res) => {
+    const docNum = parseInt(req.params.docNum, 10);
+    if (isNaN(docNum) || docNum < 1 || docNum > 100) {
+        return res.status(404).send('PDF not found');
+    }
+    const pdfContent = PDF_TEMPLATE(docNum);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.send(Buffer.from(pdfContent));
+});
+
 app.listen(PORT, () => {
     console.log(`Web Demos unified server running at http://localhost:${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
