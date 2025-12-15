@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +33,7 @@
         .header h1 {
             font-size: 3.5rem;
             margin-bottom: 1rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .header p {
@@ -54,7 +55,7 @@
             background: white;
             border-radius: 15px;
             padding: 2.5rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -72,15 +73,32 @@
 
         .demo-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
         }
 
-        .demo-card.basic { --accent-color: #28a745; }
-        .demo-card.form { --accent-color: #ff6b6b; }
-        .demo-card.blocking { --accent-color: #f39c12; }
-        .demo-card.multipage { --accent-color: #9b59b6; }
-        .demo-card.simple { --accent-color: #ff9800; }
-        .demo-card.slow { --accent-color: #3498db; }
+        .demo-card.basic {
+            --accent-color: #28a745;
+        }
+
+        .demo-card.form {
+            --accent-color: #ff6b6b;
+        }
+
+        .demo-card.blocking {
+            --accent-color: #f39c12;
+        }
+
+        .demo-card.multipage {
+            --accent-color: #9b59b6;
+        }
+
+        .demo-card.simple {
+            --accent-color: #ff9800;
+        }
+
+        .demo-card.slow {
+            --accent-color: #3498db;
+        }
 
         .demo-icon {
             font-size: 4rem;
@@ -147,12 +165,12 @@
             transition: all 0.3s ease;
             width: 100%;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .demo-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
             filter: brightness(110%);
         }
 
@@ -164,18 +182,19 @@
             .header h1 {
                 font-size: 2.5rem;
             }
-            
+
             .demos-grid {
                 grid-template-columns: 1fr;
                 gap: 1.5rem;
             }
-            
+
             .demo-card {
                 padding: 2rem;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -189,15 +208,16 @@
                 <div class="status-indicator">Port 3001</div>
                 <span class="demo-icon">🔐</span>
                 <h3>Basic Authentication</h3>
-                <p>HTTP Basic Authentication using browser-native login dialogs. Simple and effective for admin panels and development environments.</p>
-                
+                <p>HTTP Basic Authentication using browser-native login dialogs. Simple and effective for admin panels
+                    and development environments.</p>
+
                 <div class="demo-credentials">
                     <strong>Demo Credentials:</strong><br>
                     <ul style="margin:0;padding-left:1.2em;">
-                      <li><b>admin</b> / admin</li>
-                      <li><b>test@meet.com</b> / Meet@123</li>
-                      <li><b>meetUser#</b> / meetPass</li>
-                      <li><b>Meet</b> / (^ O^)</li>
+                        <li><b>admin</b> / admin</li>
+                        <li><b>test@meet.com</b> / Meet@123</li>
+                        <li><b>meetUser#</b> / meetPass</li>
+                        <li><b>Meet</b> / (^ O^)</li>
                     </ul>
                 </div>
 
@@ -207,13 +227,15 @@
                         <li>No custom login forms needed</li>
                         <li>Automatic retry on failure</li>
                         <li>Logout & redo functionality</li>
+                        <li><b>PDF available after login</b></li>
                     </ul>
                 </div>
 
                 <a href="/basic-auth/" class="demo-btn">
                     Launch Basic Auth Demo →
                 </a>
-                <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=basic-auth/" class="demo-btn" style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
+                <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=basic-auth/" class="demo-btn"
+                        style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
             </div>
 
             <!-- Form Auth Demo -->
@@ -221,15 +243,16 @@
                 <div class="status-indicator">Port 3002</div>
                 <span class="demo-icon">📝</span>
                 <h3>Form Authentication</h3>
-                <p>Custom login forms with session management. Full control over styling and user experience with proper logout functionality.</p>
-                
+                <p>Custom login forms with session management. Full control over styling and user experience with proper
+                    logout functionality.</p>
+
                 <div class="demo-credentials">
                     <strong>Demo Credentials:</strong><br>
                     <ul style="margin:0;padding-left:1.2em;">
-                      <li><b>admin</b> / admin</li>
-                      <li><b>test@meet.com</b> / Meet@123</li>
-                      <li><b>meetUser#</b> / meetPass</li>
-                      <li><b>Meet</b> / (^ O^)</li>
+                        <li><b>admin</b> / admin</li>
+                        <li><b>test@meet.com</b> / Meet@123</li>
+                        <li><b>meetUser#</b> / meetPass</li>
+                        <li><b>Meet</b> / (^ O^)</li>
                     </ul>
                 </div>
 
@@ -239,13 +262,15 @@
                         <li>Session-based authentication</li>
                         <li>Multiple user accounts</li>
                         <li>Secure logout functionality</li>
+                        <li><b>PDF available after login</b></li>
                     </ul>
                 </div>
 
                 <a href="/form-auth" class="demo-btn">
                     Launch Form Auth Demo →
                 </a>
-                <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=form-auth-login.html" class="demo-btn" style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
+                <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=form-auth-login.html" class="demo-btn"
+                        style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
             </div>
 
             <!-- Simple Password Auth Demo -->
@@ -253,15 +278,16 @@
                 <div class="status-indicator">Port 3005</div>
                 <span class="demo-icon">🔑</span>
                 <h3>Simple Password Authentication</h3>
-                <p>Password-only login. No username or email required—just enter the correct password to access the secure area.</p>
-                
+                <p>Password-only login. No username or email required—just enter the correct password to access the
+                    secure area.</p>
+
                 <div class="demo-credentials">
                     <strong>Demo Passwords:</strong><br>
                     <ul style="margin:0;padding-left:1.2em;">
-                      <li><b>admin</b></li>
-                      <li><b>Meet@123</b></li>
-                      <li><b>meetPass</b></li>
-                      <li><b>(^ O^)</b></li>
+                        <li><b>admin</b></li>
+                        <li><b>Meet@123</b></li>
+                        <li><b>meetPass</b></li>
+                        <li><b>(^ O^)</b></li>
                     </ul>
                 </div>
 
@@ -271,13 +297,15 @@
                         <li>No username or email required</li>
                         <li>Session-based access</li>
                         <li>Secure logout functionality</li>
+                        <li><b>PDF available after login</b></li>
                     </ul>
                 </div>
 
                 <a href="/simple-password-auth" class="demo-btn">
                     Launch Simple Password Auth →
                 </a>
-                <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=simple-password-login.html" class="demo-btn" style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
+                <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=simple-password-login.html"
+                        class="demo-btn" style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
             </div>
 
             <!-- Blocking UI Demo -->
@@ -285,11 +313,13 @@
                 <div class="status-indicator">Port 3003</div>
                 <span class="demo-icon">🚫</span>
                 <h3>Blocking UI Overlay</h3>
-                <p>Cookie-based blocking interface for first-time users. Perfect for onboarding, consent forms, and feature announcements.</p>
-                
+                <p>Cookie-based blocking interface for first-time users. Perfect for onboarding, consent forms, and
+                    feature announcements.</p>
+
                 <div class="demo-credentials">
                     <strong>How it works:</strong><br>
-                    Shows overlay until "existingUser" cookie is set. Great for GDPR consent, age verification, or welcome messages.
+                    Shows overlay until "existingUser" cookie is set. Great for GDPR consent, age verification, or
+                    welcome messages.
                 </div>
 
                 <div class="demo-features">
@@ -304,7 +334,8 @@
                 <a href="/blocking-ui" class="demo-btn">
                     Launch Blocking UI Demo →
                 </a>
-                <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=blocking-ui-content.html" class="demo-btn" style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
+                <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=blocking-ui-content.html"
+                        class="demo-btn" style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
             </div>
 
             <!-- Multi-Page Auth Demo -->
@@ -312,15 +343,16 @@
                 <div class="status-indicator">Port 3004</div>
                 <span class="demo-icon">🔄</span>
                 <h3>Multi-Page Authentication</h3>
-                <p>2-step authentication flow with progressive disclosure. Enhanced user experience for complex authentication processes.</p>
-                
+                <p>2-step authentication flow with progressive disclosure. Enhanced user experience for complex
+                    authentication processes.</p>
+
                 <div class="demo-credentials">
                     <strong>Demo Credentials:</strong><br>
                     <ul style="margin:0;padding-left:1.2em;">
-                      <li><b>admin</b> / admin</li>
-                      <li><b>test@meet.com</b> / Meet@123</li>
-                      <li><b>meetUser#</b> / meetPass</li>
-                      <li><b>Meet</b> / (^ O^)</li>
+                        <li><b>admin</b> / admin</li>
+                        <li><b>test@meet.com</b> / Meet@123</li>
+                        <li><b>meetUser#</b> / meetPass</li>
+                        <li><b>Meet</b> / (^ O^)</li>
                     </ul>
                 </div>
 
@@ -330,13 +362,15 @@
                         <li>Progressive form disclosure</li>
                         <li>Session state management</li>
                         <li>Beautiful step indicators</li>
+                        <li><b>PDF available after login</b></li>
                     </ul>
                 </div>
 
                 <a href="/multi-page-auth" class="demo-btn">
                     Launch Multi-Page Auth →
                 </a>
-                <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=multi-page-dashboard.html" class="demo-btn" style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
+                <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=multi-page-dashboard.html"
+                        class="demo-btn" style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
             </div>
 
             <!-- Slow Loading Page Demo -->
@@ -344,7 +378,8 @@
                 <div class="status-indicator">Port 3000</div>
                 <span class="demo-icon">⏳</span>
                 <h3>Slow Loading Page</h3>
-                <p>Simulates a slow-loading page with adjustable delay. Useful for testing loading spinners and timeout behaviors.</p>
+                <p>Simulates a slow-loading page with adjustable delay. Useful for testing loading spinners and timeout
+                    behaviors.</p>
 
                 <div class="demo-credentials">
                     <strong>How it works:</strong><br>
@@ -362,7 +397,8 @@
                 <a href="/slow" class="demo-btn">
                     Launch Slow Loading Page Demo →
                 </a>
-                <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=slow" class="demo-btn" style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
+                <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=slow" class="demo-btn"
+                        style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
             </div>
             <!-- End Simple Password Auth Demo -->
 
@@ -370,8 +406,9 @@
             <div class="demo-card" style="--accent-color: #6c5ce7;">
                 <span class="demo-icon">🗺️</span>
                 <h3>Sitemap Auth Testing</h3>
-                <p>Test different authentication scenarios for XML sitemaps. Includes 4 auth modes: both protected, root-only, children-only, and open access.</p>
-                
+                <p>Test different authentication scenarios for XML sitemaps. Includes 4 auth modes: both protected,
+                    root-only, children-only, and open access.</p>
+
                 <div class="demo-credentials">
                     <strong>Auth Scenarios:</strong><br>
                     • Root auth, children open<br>
@@ -394,88 +431,92 @@
                 </a>
             </div>
             <!-- End Sitemap Testing Demo -->
-            <!-- PDF Links Card (Dynamic) -->
-            <div class="demo-card" style="--accent-color: #e84393;" id="pdf-card">
+            <!-- PDF Links Card (Info Only) -->
+            <div class="demo-card" style="--accent-color: #e84393;">
                 <span class="demo-icon">📄</span>
                 <h3>PDF Resources</h3>
-                <p>Access useful PDF documents for reference and download.</p>
+                <p>Some PDF resources are only available after successful authentication in their respective demo. Please login to the relevant demo to access protected PDFs.</p>
                 <div class="demo-features">
-                    <ul id="pdf-links-list"></ul>
+                    <ul>
+                        <li>Basic Auth PDF: Available after login</li>
+                        <li>Form Auth PDF: Available after login</li>
+                        <li>Multi-Page Auth PDF: Available after login</li>
+                        <li>Simple Password Auth PDF: Available after login</li>
+                    </ul>
                 </div>
+                <h4>Available PDFs</h4>
+                <ul>
+                    <li><a href="pdfs/doc1.pdf" target="_blank">Document 1</a></li>
+                    <li><a href="pdfs/doc2.pdf" target="_blank">Document 2</a></li>
+                    <li><a href="pdfs/doc3.pdf" target="_blank">Document 3</a></li>
+                    <li><a href="pdfs/doc4.pdf" target="_blank">Document 4</a></li>
+                    <li><a href="pdfs/doc5.pdf" target="_blank">Document 5</a></li>
+                </ul>
             </div>
+            <!-- End Links Card (Info Only) -->
+            <!-- End of .demos-grid -->
+            <footer style="text-align:center;color:#fff;opacity:0.9;margin-top:2rem;font-size:0.9rem;line-height:1.6;">
+                <p>Sitemaps:
+                    <a style="color:#fff;font-weight:600;text-decoration:underline;" href="/sitemap-index.xml">Index</a>
+                    •
+                    <a style="color:#fff;text-decoration:underline;" href="/sitemaps/sitemap-pages.xml">Pages</a> •
+                    <a style="color:#fff;text-decoration:underline;" href="/sitemaps/sitemap-auth-core.xml">Auth
+                        Core</a> •
+                    <a style="color:#fff;text-decoration:underline;" href="/sitemaps/sitemap-auth-flows.xml">Auth
+                        Flows</a>
+                </p>
+                <p><a style="color:#fff;text-decoration:underline;" href="/robots.txt">robots.txt</a></p>
+            </footer>
         </div>
-        <!-- End of .demos-grid -->
-                <footer style="text-align:center;color:#fff;opacity:0.9;margin-top:2rem;font-size:0.9rem;line-height:1.6;">
-                        <p>Sitemaps: 
-                            <a style="color:#fff;font-weight:600;text-decoration:underline;" href="/sitemap-index.xml">Index</a> • 
-                            <a style="color:#fff;text-decoration:underline;" href="/sitemaps/sitemap-pages.xml">Pages</a> • 
-                            <a style="color:#fff;text-decoration:underline;" href="/sitemaps/sitemap-auth-core.xml">Auth Core</a> • 
-                            <a style="color:#fff;text-decoration:underline;" href="/sitemaps/sitemap-auth-flows.xml">Auth Flows</a>
-                        </p>
-                        <p><a style="color:#fff;text-decoration:underline;" href="/robots.txt">robots.txt</a></p>
-                </footer>
-    </div>
-    <script>
-        function copyCommand() {
-            const command = 'cd web-demos && npm start';
-            navigator.clipboard.writeText(command).then(() => {
-                const btn = document.querySelector('.copy-btn');
-                btn.textContent = 'Copied!';
-                setTimeout(() => {
-                    btn.textContent = 'Copy';
-                }, 2000);
-            });
-        }
-
-        // Check if servers are running by testing the health endpoints
-        function checkServerStatus() {
-            // Check embedded demo health endpoints
-            const demoRoutes = [
-                { name: 'Basic Auth', path: '/basic-auth/health' },
-                { name: 'Form Auth', path: '/form-auth/health' },
-                { name: 'Blocking UI', path: '/blocking-ui/health' },
-                { name: 'Multi-Page Auth', path: '/multi-page-auth/health' },
-                { name: 'Simple Password Auth', path: '/simple-password-auth/health' },
-                { name: 'Slow Loading Page', path: '/slow/health' }
-            ];
-            
-            const cards = document.querySelectorAll('.demo-card');
-            
-            demoRoutes.forEach((demo, index) => {
-                fetch(demo.path)
-                    .then(response => {
-                        if (response.ok) {
-                            cards[index].querySelector('.status-indicator').style.background = '#28a745';
-                            cards[index].querySelector('.status-indicator').textContent = `✓ ${demo.name} Ready`;
-                        } else {
-                            throw new Error('Demo not ready');
-                        }
-                    })
-                    .catch(() => {
-                        cards[index].querySelector('.status-indicator').style.background = '#ffc107';
-                        cards[index].querySelector('.status-indicator').textContent = `⚠ ${demo.name} Loading...`;
-                    });
-            });
-        }
-
-        // Check server status on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(checkServerStatus, 1000);
-            // Dynamically render PDF links
-            const pdfCount = 10; // Change this value for more/less PDFs
-            const pdfLinksList = document.getElementById('pdf-links-list');
-            if (pdfLinksList) {
-                for (let i = 1; i <= pdfCount; i++) {
-                    const li = document.createElement('li');
-                    const a = document.createElement('a');
-                    a.href = `/pdfs/doc${i}.pdf`;
-                    a.target = '_blank';
-                    a.textContent = `Document ${i}`;
-                    li.appendChild(a);
-                    pdfLinksList.appendChild(li);
-                }
+        <script>
+            function copyCommand() {
+                const command = 'cd web-demos && npm start';
+                navigator.clipboard.writeText(command).then(() => {
+                    const btn = document.querySelector('.copy-btn');
+                    btn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        btn.textContent = 'Copy';
+                    }, 2000);
+                });
             }
-        });
-    </script>
+
+            // Check if servers are running by testing the health endpoints
+            function checkServerStatus() {
+                // Check embedded demo health endpoints
+                const demoRoutes = [
+                    { name: 'Basic Auth', path: '/basic-auth/health' },
+                    { name: 'Form Auth', path: '/form-auth/health' },
+                    { name: 'Blocking UI', path: '/blocking-ui/health' },
+                    { name: 'Multi-Page Auth', path: '/multi-page-auth/health' },
+                    { name: 'Simple Password Auth', path: '/simple-password-auth/health' },
+                    { name: 'Slow Loading Page', path: '/slow/health' }
+                ];
+
+                const cards = document.querySelectorAll('.demo-card');
+
+                demoRoutes.forEach((demo, index) => {
+                    fetch(demo.path)
+                        .then(response => {
+                            if (response.ok) {
+                                cards[index].querySelector('.status-indicator').style.background = '#28a745';
+                                cards[index].querySelector('.status-indicator').textContent = `✓ ${demo.name} Ready`;
+                            } else {
+                                throw new Error('Demo not ready');
+                            }
+                        })
+                        .catch(() => {
+                            cards[index].querySelector('.status-indicator').style.background = '#ffc107';
+                            cards[index].querySelector('.status-indicator').textContent = `⚠ ${demo.name} Loading...`;
+                        });
+                });
+            }
+
+            // Check server status on page load
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(checkServerStatus, 1000);
+                // ...existing code...
+            });
+        </script>
 </body>
+
 </html>

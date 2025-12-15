@@ -178,7 +178,54 @@ app.get('/sitemap-scenarios/:mode/:group.xml', (req,res)=>{
 
 console.log('[sitemaps] Multi-scenario endpoints mounted at /sitemap-scenarios');
 
-// Serve static files (after sitemap auth middleware so sitemaps are protected)
+// PROTECTED PDF ENDPOINTS (Behind Auth)
+// Basic Auth protected PDF
+app.get('/pdfs/behind_auth/basic_auth.pdf', (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Basic ')) {
+        res.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
+        return res.status(401).send('Authentication required');
+    }
+    const base64Credentials = authHeader.split(' ')[1];
+    const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
+    const [username, password] = credentials.split(':');
+    if (users[username] && users[username] === password) {
+        return res.sendFile(path.join(__dirname, 'pdfs/behind_auth/basic_auth.pdf'));
+    }
+    res.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
+    return res.status(401).send('Invalid credentials');
+});
+
+// Form Auth protected PDF
+app.get('/pdfs/behind_auth/form_auth.pdf', (req, res) => {
+    if (req.session && req.session.formAuthenticated) {
+        return res.sendFile(path.join(__dirname, 'pdfs/behind_auth/form_auth.pdf'));
+    }
+    return res.status(401).send('Login required');
+});
+
+// Multi-page Auth protected PDF
+app.get('/pdfs/behind_auth/multipage_auth.pdf', (req, res) => {
+    if (req.session && req.session.multiPageAuthenticated) {
+        return res.sendFile(path.join(__dirname, 'pdfs/behind_auth/multipage_auth.pdf'));
+    }
+    return res.status(401).send('Login required');
+});
+
+// Simple Password Auth protected PDF
+app.get('/pdfs/behind_auth/simplepass_auth.pdf', (req, res) => {
+    if (req.session && req.session.simplePasswordAuthenticated) {
+        return res.sendFile(path.join(__dirname, 'pdfs/behind_auth/simplepass_auth.pdf'));
+    }
+    return res.status(401).send('Login required');
+});
+
+// Block all other direct static access to /pdfs/behind_auth/*
+app.get('/pdfs/behind_auth/*', (req, res) => {
+    return res.status(403).send('Forbidden');
+});
+
+// Serve static files (after protected PDF routes)
 app.use(express.static('.'));
 app.use(express.static('public'));
 
@@ -255,7 +302,7 @@ app.get('/basic-auth', (req, res) => {
     const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
     const [username, password] = credentials.split(':');
     if (users[username] && users[username] === password) {
-        // Show secure page with logged-in user
+        // Show secure page with logged-in user and PDF link
         return res.send(`
             <!DOCTYPE html>
             <html>
@@ -264,6 +311,7 @@ app.get('/basic-auth', (req, res) => {
                 <div class="container" style="max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                     <h2>✅ Authenticated!</h2>
                     <p>Welcome, <b>${username}</b>!</p>
+                    <p><a href="/pdfs/behind_auth/basic_auth.pdf" target="_blank" style="color:#1976D2;font-weight:bold;">Download your protected PDF</a></p>
                     <form method="post" action="/basic-auth/logout">
                         <button type="submit" style="margin-top:20px;padding:10px 20px;border-radius:5px;background:#ff6b6b;color:white;border:none;font-weight:bold;cursor:pointer;">Logout</button>
                     </form>
@@ -601,14 +649,10 @@ app.get('/pdfs/doc:docNum.pdf', (req, res) => {
     res.send(Buffer.from(pdfContent));
 });
 
+
 app.listen(PORT, () => {
     console.log(`Web Demos unified server running at http://localhost:${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log('Available demos:');
-    console.log('  - Basic Auth: /basic-auth');
-    console.log('  - Form Auth: /form-auth');
-    console.log('  - Cookie Blocking UI: /blocking-ui');
-    console.log('  - Multi-Page Auth: /multi-page-auth');
 });
 
 module.exports = app;
