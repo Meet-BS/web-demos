@@ -318,7 +318,31 @@ app.get('/basic-auth', (req, res) => {
                     <div class="back-link" style="margin-top:20px;">
                         <a href="/">← Back to Landing Page</a>
                     </div>
+
+                    <div style="margin-top:30px; text-align:left;">
+                        <h3>Leave a quick review</h3>
+                        <form id="basic-auth-review-form">
+                            <label for="basic-auth-comment">Comments:</label><br>
+                            <textarea id="basic-auth-comment" name="comment" rows="3" style="width:100%;margin-top:6px;padding:8px;border-radius:4px;border:1px solid #ddd;"></textarea>
+                            <br>
+                            <button type="submit" style="margin-top:10px;padding:8px 16px;border-radius:4px;background:#2196F3;color:white;border:none;cursor:pointer;">Submit Review</button>
+                            <span id="basic-auth-review-status" style="margin-left:10px;"></span>
+                        </form>
+                    </div>
                 </div>
+
+                <script>
+                    (function () {
+                        var form = document.getElementById('basic-auth-review-form');
+                        var status = document.getElementById('basic-auth-review-status');
+                        if (form && status) {
+                            form.addEventListener('submit', function (e) {
+                                e.preventDefault();
+                                status.textContent = 'Form submitted';
+                            });
+                        }
+                    })();
+                </script>
             </body>
             </html>
         `);

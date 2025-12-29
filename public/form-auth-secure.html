@@ -86,6 +86,32 @@
                 document.getElementById('username').textContent = 'Error loading user';
                 document.getElementById('logged-in-user').textContent = 'Error loading user';
             });
+
+        // Simple client-side review form handler
+        (function () {
+            const form = document.getElementById('form-auth-review-form');
+            const status = document.getElementById('form-auth-review-status');
+            if (form && status) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    status.textContent = 'Form submitted';
+                });
+            }
+        })();
     </script>
+
+    <div class="container" style="margin-top:20px; max-width:500px;">
+        <div class="demo-info">
+            <h3>Leave a quick review</h3>
+            <form id="form-auth-review-form">
+                <div style="margin: 10px 0; text-align:left;">
+                    <label for="form-auth-comment">Comments:</label><br>
+                    <textarea id="form-auth-comment" name="comment" rows="3" style="width:100%; margin-top:6px; padding:8px; border-radius:4px; border:none;"></textarea>
+                </div>
+                <button type="submit" class="btn back-btn">Submit Review</button>
+                <span id="form-auth-review-status" style="margin-left:10px;"></span>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

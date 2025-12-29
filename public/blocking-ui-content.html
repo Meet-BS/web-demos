@@ -68,6 +68,17 @@
             <div style="margin-top: 20px;">
                 <a href="/" class="btn btn-primary">← Back to Landing Page</a>
             </div>
+            <div style="margin-top: 30px; background:#e3f2fd; padding:20px; border-radius:10px;">
+                <h3>Leave a quick review</h3>
+                <form id="blocking-ui-review-form">
+                    <div style="margin: 10px 0; text-align:left;">
+                        <label for="blocking-ui-comment">Comments:</label><br>
+                        <textarea id="blocking-ui-comment" name="comment" rows="3" style="width:100%; margin-top:6px; padding:8px; border-radius:4px; border:1px solid #90caf9;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                    <span id="blocking-ui-review-status" style="margin-left:10px;"></span>
+                </form>
+            </div>
         </div>
     </div>
     <!-- Blocking Overlay Popup -->
@@ -181,6 +192,18 @@
                     }
                 });
         });
+
+        // Simple client-side review form handler
+        (function () {
+            const form = document.getElementById('blocking-ui-review-form');
+            const status = document.getElementById('blocking-ui-review-status');
+            if (form && status) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    status.textContent = 'Form submitted';
+                });
+            }
+        })();
     </script>
 </body>
 </html>

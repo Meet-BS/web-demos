@@ -63,6 +63,32 @@
         </form>
         
         <a href="/" class="btn back-btn" style="text-decoration:none;">← Back to Landing</a>
+
+        <div class="demo-info" style="margin-top: 30px;">
+            <h3>Leave a quick review</h3>
+            <form id="basic-auth-review-form">
+                <div style="margin: 10px 0; text-align:left;">
+                    <label for="basic-auth-comment">Comments:</label><br>
+                    <textarea id="basic-auth-comment" name="comment" rows="3" style="width:100%; margin-top:6px; padding:8px; border-radius:4px; border:none;"></textarea>
+                </div>
+                <button type="submit" class="btn back-btn">Submit Review</button>
+                <span id="basic-auth-review-status" style="margin-left:10px;"></span>
+            </form>
+        </div>
     </div>
+
+    <script>
+        // Simple client-side handler so submit only shows a message
+        (function () {
+            const form = document.getElementById('basic-auth-review-form');
+            const status = document.getElementById('basic-auth-review-status');
+            if (form && status) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    status.textContent = 'Form submitted';
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
