@@ -178,6 +178,59 @@
             display: none;
         }
 
+        /* Popup button */
+        .popup-btn {
+            background: #6c5ce7;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: inherit;
+            color: white;
+            display: inline-block;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .popup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            filter: brightness(110%);
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            max-width: 380px;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 9999;
+            transform: translateY(120%);
+            opacity: 0;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+        .toast.toast-show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-success { background: #00b894; }
+        .toast-error   { background: #d63031; }
+        .toast-warning { background: #e17055; }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2.5rem;
@@ -236,6 +289,9 @@
                 </a>
                 <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=basic-auth/" class="demo-btn"
                         style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
+                <div style="margin-top:0.7rem;">
+                    <button onclick="openPopup('/basic-auth/', 'Basic Auth', '/basic-auth/api/auth-status')" class="popup-btn">🪟 Open Popup Window</button>
+                </div>
             </div>
 
             <!-- Form Auth Demo -->
@@ -271,6 +327,9 @@
                 </a>
                 <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=form-auth-login.html" class="demo-btn"
                         style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
+                <div style="margin-top:0.7rem;">
+                    <button onclick="openPopup('/form-auth/login', 'Form Auth', '/form-auth/api/auth-status')" class="popup-btn">🪟 Open Popup Window</button>
+                </div>
             </div>
 
             <!-- Simple Password Auth Demo -->
@@ -306,6 +365,9 @@
                 </a>
                 <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=simple-password-login.html"
                         class="demo-btn" style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
+                <div style="margin-top:0.7rem;">
+                    <button onclick="openPopup('/simple-password-auth/login', 'Simple Password Auth', '/simple-password-auth/api/auth-status')" class="popup-btn">🪟 Open Popup Window</button>
+                </div>
             </div>
 
             <!-- Blocking UI Demo -->
@@ -371,6 +433,9 @@
                 </a>
                 <div style="margin-top:0.7rem;"><a href="/iframe-demo.html?url=multi-page-dashboard.html"
                         class="demo-btn" style="background:#1976D2;">Open in Iframe (Isolated)</a></div>
+                <div style="margin-top:0.7rem;">
+                    <button onclick="openPopup('/multi-page-auth', 'Multi-Page Auth', '/multi-page-auth/api/auth-status')" class="popup-btn">🪟 Open Popup Window</button>
+                </div>
             </div>
 
             <!-- Slow Loading Page Demo -->
@@ -469,6 +534,69 @@
             </footer>
         </div>
         <script>
+            function openPopup(url, authType, authStatusUrl) {
+                const w = 520, h = 680;
+                const left = Math.round(window.screen.width / 2 - w / 2);
+                const top = Math.round(window.screen.height / 2 - h / 2);
+                const features = `width=${w},height=${h},top=${top},left=${left}`;
+
+                let popup;
+                try {
+                    popup = window.open('about:blank', '', features);
+                } catch (e) {
+                    popup = null;
+                }
+
+                if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+                    showToast('⚠️ Popup was blocked. Please allow popups for this site and try again.', 'warning');
+                    return;
+                }
+
+                popup.location.href = url;
+
+                const timer = setInterval(() => {
+                    if (popup.closed) {
+                        clearInterval(timer);
+                        fetch(authStatusUrl, { credentials: 'include' })
+                            .then(res => {
+                                if (res.ok) {
+                                    return res.json().then(data => {
+                                        const user = data.username ? ` as ${data.username}` : '';
+                                        showToast(`✅ Success: "${authType} login successful${user}! Session is now active."`, 'success');
+                                    });
+                                } else {
+                                    showToast(`❌ Not completed: "${authType} login was not completed. Please try again."`, 'error');
+                                }
+                            })
+                            .catch(() => {
+                                showToast(`❓ Could not verify ${authType} session. Please refresh.`, 'warning');
+                            });
+                    }
+                }, 500);
+            }
+
+            function showToast(message, type) {
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.textContent = message;
+                toast.onclick = () => {
+                    toast.classList.remove('toast-show');
+                    setTimeout(() => toast.remove(), 400);
+                };
+                document.body.appendChild(toast);
+
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        toast.classList.add('toast-show');
+                    });
+                });
+
+                setTimeout(() => {
+                    toast.classList.remove('toast-show');
+                    setTimeout(() => toast.remove(), 400);
+                }, 6000);
+            }
+
             function copyCommand() {
                 const command = 'cd web-demos && npm start';
                 navigator.clipboard.writeText(command).then(() => {
