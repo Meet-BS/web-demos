@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Auth Demo - Login</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FF6B35 0%, #F7C948 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+        .login-container {
+            background: white; padding: 40px; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-width: 400px; width: 100%;
+        }
+        h1 { text-align: center; margin-bottom: 30px; color: #333; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input[type="text"], input[type="password"] {
+            width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px;
+            font-size: 16px; transition: border-color 0.3s;
+        }
+        input:focus { border-color: #FF6B35; outline: none; }
+        .btn {
+            width: 100%; background: #FF6B35; color: white; border: none;
+            padding: 12px; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 10px;
+        }
+        .btn:hover { background: #e55a2b; }
+        .back-btn { background: #2196F3; margin-top: 10px; text-decoration: none; text-align: center; display: block; }
+        .back-btn:hover { background: #1976D2; }
+        .error { color: #f44336; margin-bottom: 15px; padding: 10px; background: #ffebee; border-radius: 5px; }
+        .demo-credentials {
+            background: #fff3e0; padding: 16px 20px; border-radius: 8px; margin-bottom: 20px;
+            border-left: 4px solid #FF6B35;
+        }
+        .demo-credentials h3 { margin-bottom: 10px; font-size: 16px; color: #333; }
+        .demo-credentials ul { list-style: disc inside; padding-left: 0; }
+        .demo-credentials li { margin-bottom: 6px; color: #555; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>🔐 OTP Authentication</h1>
+
+        <div class="demo-credentials">
+            <h3>Demo Credentials</h3>
+            <ul>
+                <li><b>Username:</b> admin</li>
+                <li><b>Password:</b> admin</li>
+                <li><b>OTP:</b> 123456 (shown on next page)</li>
+            </ul>
+        </div>
+
+        <script>
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            if (error) {
+                document.write('<div class="error">' + decodeURIComponent(error) + '</div>');
+            }
+        </script>
+
+        <form method="POST" action="/otp-auth/login">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required placeholder="Enter username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required placeholder="Enter password">
+            </div>
+
+            <button type="submit" id="login-submit" class="btn">Sign In</button>
+        </form>
+
+        <a href="/" class="btn back-btn">← Back to Landing</a>
+    </div>
+</body>
+</html>

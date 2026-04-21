@@ -482,6 +482,75 @@ app.get('/form-auth/health', (req, res) => {
 });
 
 // =============================================================================
+// OTP AUTH DEMO - Login + OTP verification flow (CN-2966)
+// =============================================================================
+
+const OTP_CODE = '123456';
+
+function requireOtpAuth(req, res, next) {
+    if (req.session.otpAuthenticated) return next();
+    res.redirect('/otp-auth/login?redirect=' + encodeURIComponent(req.originalUrl));
+}
+
+app.get('/otp-auth', (req, res) => {
+    if (req.session.otpAuthenticated) return res.redirect('/otp-auth/secure');
+    res.redirect('/otp-auth/login');
+});
+
+app.get('/otp-auth/login', (req, res) => {
+    if (req.session.otpAuthenticated) {
+        const redirect = req.query.redirect || '/otp-auth/secure';
+        return res.redirect(redirect);
+    }
+    res.sendFile(path.join(__dirname, 'public/otp-auth-login.html'));
+});
+
+app.post('/otp-auth/login', (req, res) => {
+    const { username, password } = req.body;
+    if (users[username] && users[username] === password) {
+        req.session.otpCredentialsVerified = true;
+        req.session.otpUsername = username;
+        res.redirect('/otp-auth/verify');
+    } else {
+        res.redirect('/otp-auth/login?error=Invalid username or password');
+    }
+});
+
+app.get('/otp-auth/verify', (req, res) => {
+    if (!req.session.otpCredentialsVerified) {
+        return res.redirect('/otp-auth/login');
+    }
+    if (req.session.otpAuthenticated) {
+        return res.redirect('/otp-auth/secure');
+    }
+    res.sendFile(path.join(__dirname, 'public/otp-auth-verify.html'));
+});
+
+app.post('/otp-auth/verify', (req, res) => {
+    if (!req.session.otpCredentialsVerified) {
+        return res.redirect('/otp-auth/login');
+    }
+    const { otp } = req.body;
+    if (otp === OTP_CODE) {
+        req.session.otpAuthenticated = true;
+        res.redirect('/otp-auth/secure');
+    } else {
+        res.redirect('/otp-auth/verify?error=Invalid OTP. Please try again.');
+    }
+});
+
+app.get('/otp-auth/secure', requireOtpAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/otp-auth-secure.html'));
+});
+
+app.post('/otp-auth/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) console.error('Error destroying session:', err);
+        res.redirect('/otp-auth');
+    });
+});
+
+// =============================================================================
 // BLOCKING UI DEMO - Embedded Implementation
 // =============================================================================
 
