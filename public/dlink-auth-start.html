@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Link Auth - Step 1 of 5</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FF6B35 0%, #F7C948 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+        .login-container {
+            background: white; padding: 40px; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-width: 440px; width: 100%;
+        }
+        h1 { text-align: center; margin-bottom: 8px; color: #333; }
+        .step-tag { text-align: center; color: #999; font-size: 13px; margin-bottom: 24px; }
+        .info {
+            background: #fff3e0; padding: 16px 20px; border-radius: 8px; margin-bottom: 24px;
+            border-left: 4px solid #FF6B35; color: #555; font-size: 14px; line-height: 1.5;
+        }
+        .btn {
+            width: 100%; background: #FF6B35; color: white; border: none;
+            padding: 14px; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 6px;
+        }
+        .btn:hover { background: #e55a2b; }
+        .back-btn { background: #2196F3; margin-top: 10px; text-decoration: none; text-align: center; display: block; padding: 12px; }
+        .back-btn:hover { background: #1976D2; }
+        .error { color: #f44336; margin-bottom: 15px; padding: 10px; background: #ffebee; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>🔗 Dynamic Link Auth</h1>
+        <p class="step-tag">Step 1 of 5 &middot; Generate Dynamic Link</p>
+
+        <div class="info">
+            Click below to generate a one-time dynamic link bound to your session. This link unlocks the credential page.
+        </div>
+
+        <script>
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            if (error) {
+                document.write('<div class="error">' + decodeURIComponent(error) + '</div>');
+            }
+        </script>
+
+        <form method="POST" action="/dlink-auth/start">
+            <button type="submit" id="generate-link-btn" class="btn">Generate Dynamic Link</button>
+        </form>
+
+        <a href="/" class="btn back-btn">← Back to Landing</a>
+    </div>
+</body>
+</html>

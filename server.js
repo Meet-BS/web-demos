@@ -2,10 +2,11 @@ const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const crypto = require('crypto');
 
 const app = express();
 // Simple configurable port (no dynamic domain rewriting)
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 2991;
 const isProduction = process.env.NODE_ENV === 'production';
 
 // Middleware
@@ -547,6 +548,104 @@ app.post('/otp-auth/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) console.error('Error destroying session:', err);
         res.redirect('/otp-auth');
+    });
+});
+
+// =============================================================================
+// DYNAMIC LINK AUTH DEMO - 5-step flow
+//   1) Generate Dynamic Link
+//   2) Add credentials + Submit
+//   3) Send Code
+//   4) Add code + Submit
+//   5) Continue → secure dashboard
+// =============================================================================
+
+const DLINK_CODE = '654321';
+
+function requireDlinkAuth(req, res, next) {
+    if (req.session.dlinkAuthenticated) return next();
+    res.redirect('/dlink-auth?error=' + encodeURIComponent('Complete all five steps to access the secure area.'));
+}
+
+app.get('/dlink-auth', (req, res) => {
+    if (req.session.dlinkAuthenticated) return res.redirect('/dlink-auth/secure');
+    res.sendFile(path.join(__dirname, 'public/dlink-auth-start.html'));
+});
+
+app.post('/dlink-auth/start', (req, res) => {
+    const token = crypto.randomBytes(16).toString('hex');
+    req.session.dlinkToken = token;
+    res.cookie('dlinkToken', token, { httpOnly: false });
+    res.redirect('/dlink-auth/credentials');
+});
+
+app.get('/dlink-auth/credentials', (req, res) => {
+    if (!req.session.dlinkToken) return res.redirect('/dlink-auth?error=' + encodeURIComponent('Generate a dynamic link first.'));
+    res.sendFile(path.join(__dirname, 'public/dlink-auth-credentials.html'));
+});
+
+app.post('/dlink-auth/credentials', (req, res) => {
+    if (!req.session.dlinkToken) return res.redirect('/dlink-auth');
+    const { username, password } = req.body;
+    if (users[username] && users[username] === password) {
+        req.session.dlinkCredsVerified = true;
+        req.session.dlinkUsername = username;
+        res.cookie('dlinkUsername', username, { httpOnly: false });
+        res.redirect('/dlink-auth/send-code');
+    } else {
+        res.redirect('/dlink-auth/credentials?error=Invalid username or password');
+    }
+});
+
+app.get('/dlink-auth/send-code', (req, res) => {
+    if (!req.session.dlinkCredsVerified) return res.redirect('/dlink-auth/credentials');
+    res.sendFile(path.join(__dirname, 'public/dlink-auth-send-code.html'));
+});
+
+app.post('/dlink-auth/send-code', (req, res) => {
+    if (!req.session.dlinkCredsVerified) return res.redirect('/dlink-auth/credentials');
+    req.session.dlinkCodeRequested = true;
+    req.session.dlinkCode = DLINK_CODE;
+    res.redirect('/dlink-auth/verify');
+});
+
+app.get('/dlink-auth/verify', (req, res) => {
+    if (!req.session.dlinkCodeRequested) return res.redirect('/dlink-auth/send-code');
+    res.sendFile(path.join(__dirname, 'public/dlink-auth-verify.html'));
+});
+
+app.post('/dlink-auth/verify', (req, res) => {
+    if (!req.session.dlinkCodeRequested) return res.redirect('/dlink-auth/send-code');
+    const { code } = req.body;
+    if (code === req.session.dlinkCode) {
+        req.session.dlinkVerified = true;
+        res.redirect('/dlink-auth/continue');
+    } else {
+        res.redirect('/dlink-auth/verify?error=Invalid code. Please try again.');
+    }
+});
+
+app.get('/dlink-auth/continue', (req, res) => {
+    if (!req.session.dlinkVerified) return res.redirect('/dlink-auth/verify');
+    res.sendFile(path.join(__dirname, 'public/dlink-auth-continue.html'));
+});
+
+app.post('/dlink-auth/continue', (req, res) => {
+    if (!req.session.dlinkVerified) return res.redirect('/dlink-auth/verify');
+    req.session.dlinkAuthenticated = true;
+    res.redirect('/dlink-auth/secure');
+});
+
+app.get('/dlink-auth/secure', requireDlinkAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/dlink-auth-secure.html'));
+});
+
+app.post('/dlink-auth/logout', (req, res) => {
+    res.clearCookie('dlinkToken');
+    res.clearCookie('dlinkUsername');
+    req.session.destroy((err) => {
+        if (err) console.error('Error destroying session:', err);
+        res.redirect('/dlink-auth');
     });
 });
 

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Link Auth - Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5; min-height: 100vh;
+        }
+        .navbar {
+            background: #FF6B35; color: white; padding: 15px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .navbar h2 { font-size: 18px; }
+        .navbar form { display: inline; }
+        .logout-btn {
+            background: rgba(255,255,255,0.2); color: white; border: none;
+            padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
+        .content { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .card {
+            background: white; border-radius: 12px; padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px;
+        }
+        .card h2 { color: #333; margin-bottom: 15px; }
+        .card p { color: #666; line-height: 1.6; }
+        .success-badge {
+            display: inline-block; background: #e8f5e9; color: #2e7d32;
+            padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h2>🔗 Dynamic Link Auth - Secure Area</h2>
+        <form method="POST" action="/dlink-auth/logout">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </nav>
+
+    <div class="content">
+        <div class="card">
+            <h2>Welcome to the Secure Dashboard</h2>
+            <p><span class="success-badge">Authenticated via Dynamic Link + Code</span></p>
+            <br>
+            <p>You completed all five steps: dynamic link generated, credentials submitted, code requested, code verified, continue confirmed.</p>
+            <br>
+            <p>This page is protected by the dlink-auth middleware. Accessing it without completing every step redirects you back to the start.</p>
+        </div>
+
+        <div class="card">
+            <h2>How This Demo Works</h2>
+            <p><b>Step 1:</b> Generate Dynamic Link &mdash; creates a per-session token (cookie <code>dlinkToken</code>).</p>
+            <p><b>Step 2:</b> Submit credentials (admin / admin).</p>
+            <p><b>Step 3:</b> Send Code &mdash; mocks dispatching a one-time code (demo value <code>654321</code>).</p>
+            <p><b>Step 4:</b> Submit the code.</p>
+            <p><b>Step 5:</b> Continue &mdash; arrives at this protected dashboard.</p>
+            <br>
+            <p>The scanner worker would automate steps 1-4 and reach the verify page, then wait for the user to provide the code via the manual OTP modal in the frontend.</p>
+        </div>
+    </div>
+</body>
+</html>

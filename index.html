@@ -166,6 +166,7 @@
             width: 100%;
             text-align: center;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 1.5rem;
         }
 
         .demo-btn:hover {
@@ -348,6 +349,26 @@
                 </div>
                 <a href="/otp-auth" class="demo-btn" style="background:#FF6B35;">
                     Launch OTP Auth Demo →
+                </a>
+            </div>
+
+            <!-- Dynamic Link Auth Demo -->
+            <div class="demo-card otp" style="--accent-color: #FF6B35;">
+                <span class="demo-icon">🔗</span>
+                <h3>Dynamic Link Authentication</h3>
+                <div class="demo-description">
+                    <p>Five-step auth flow: generate dynamic link → submit credentials → request a one-time code → submit the code → continue to secure dashboard. Each step is gated on the previous one.</p>
+                    <ul>
+                        <li>Step 1: Generate Dynamic Link button (<code>#generate-link-btn</code>)</li>
+                        <li>Step 2: Credentials submit (<code>#creds-submit</code>)</li>
+                        <li>Step 3: Send Code button (<code>#send-code-btn</code>)</li>
+                        <li>Step 4: Code input + submit (<code>#code-input</code>, <code>#code-submit</code>)</li>
+                        <li>Step 5: Continue button (<code>#continue-btn</code>)</li>
+                        <li>Credentials: admin / admin, Code: 654321</li>
+                    </ul>
+                </div>
+                <a href="/dlink-auth" class="demo-btn" style="background:#FF6B35;">
+                    Launch Dynamic Link Demo →
                 </a>
             </div>
 
