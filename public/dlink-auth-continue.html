@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Link Auth - Step 5 of 5</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FF6B35 0%, #F7C948 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+        .login-container {
+            background: white; padding: 40px; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-width: 440px; width: 100%; text-align: center;
+        }
+        h1 { margin-bottom: 8px; color: #333; }
+        .step-tag { color: #999; font-size: 13px; margin-bottom: 24px; }
+        .success-tick {
+            font-size: 56px; line-height: 1; margin: 6px 0 16px;
+        }
+        .success-text {
+            background: #e8f5e9; padding: 16px 20px; border-radius: 8px; margin-bottom: 24px;
+            border-left: 4px solid #4CAF50; color: #2e7d32; font-size: 15px; line-height: 1.5; text-align: left;
+        }
+        .btn {
+            width: 100%; background: #FF6B35; color: white; border: none;
+            padding: 14px; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 6px;
+        }
+        .btn:hover { background: #e55a2b; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="success-tick">✅</div>
+        <h1>All Steps Verified</h1>
+        <p class="step-tag">Step 5 of 5 &middot; Continue to secure area</p>
+
+        <div class="success-text">
+            Dynamic link generated, credentials accepted, code verified. Click Continue to enter the protected dashboard.
+        </div>
+
+        <form method="POST" action="/dlink-auth/continue">
+            <button type="submit" id="continue-btn" class="btn">Continue</button>
+        </form>
+    </div>
+</body>
+</html>
