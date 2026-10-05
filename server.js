@@ -286,7 +286,7 @@ app.get('/basic-auth', (req, res) => {
                         <li><b>admin</b> / admin</li>
                         <li><b>test@meet.com</b> / Meet@123</li>
                         <li><b>meetUser#</b> / meetPass</li>
-                        <li><b>Meet</b> / <code>(^ O^)!"#$%&amp;'*+,-./:;&lt;=&gt;?@[\]_\`{|}~</code></li>
+                        <li><b>Meet</b> / <code>(^ O^)!"#$%&amp;'*+,-./:;&lt;=&gt;?@[\\]_\`{|}~</code></li>
                       </ul>
                     </div>
                     <div class="back-link">
@@ -370,7 +370,7 @@ app.get('/basic-auth', (req, res) => {
                         <li><b>admin</b> / admin</li>
                         <li><b>test@meet.com</b> / Meet@123</li>
                         <li><b>meetUser#</b> / meetPass</li>
-                        <li><b>Meet</b> / <code>(^ O^)!"#$%&amp;'*+,-./:;&lt;=&gt;?@[\]_\`{|}~</code></li>
+                        <li><b>Meet</b> / <code>(^ O^)!"#$%&amp;'*+,-./:;&lt;=&gt;?@[\\]_\`{|}~</code></li>
                       </ul>
                     </div>
                     <div class="back-link">
