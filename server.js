@@ -433,10 +433,13 @@ app.get('/form-auth/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/form-auth-login.html'));
 });
 
+// ponytail: form-auth only — basic auth splits on ':' so this password can't live in the shared users map
+const formAuthUsers = { ...users, 'Meet': '(^ O^)!"#$%&\'*+,-./:;<=>?@[\\]_`{|}~' };
+
 app.post('/form-auth/login', (req, res) => {
     const { username, password } = req.body;
     // Only check if the pair matches, no validation on content
-    if (users[username] && users[username] === password) {
+    if (formAuthUsers[username] && formAuthUsers[username] === password) {
         req.session.formAuthenticated = true;
         req.session.formUsername = username;
         const redirect = req.query.redirect || '/form-auth/secure';
