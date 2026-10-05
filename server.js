@@ -187,9 +187,7 @@ app.get('/pdfs/behind_auth/basic_auth.pdf', (req, res) => {
         res.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
         return res.status(401).send('Authentication required');
     }
-    const base64Credentials = authHeader.split(' ')[1];
-    const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
-    const [username, password] = credentials.split(':');
+    const [username, password] = decodeBasicAuth(authHeader); // splits at first ':' only, password may contain ':'
     if (users[username] && users[username] === password) {
         return res.sendFile(path.join(__dirname, 'pdfs/behind_auth/basic_auth.pdf'));
     }
@@ -237,7 +235,7 @@ const users = {
     'admin': 'admin',
     'test@meet.com': 'Meet@123',
     'meetUser#': 'meetPass',
-    'Meet': '(^ O^)',
+    'Meet': '(^ O^)!"#$%&\'*+,-./:;<=>?@[\\]_`{|}~',
     'user@example.com': 'mypassword',
     'john': 'secret456',
     'jane.doe@email.com': 'jane123'
@@ -248,7 +246,7 @@ const multiPageUsers = {
     'admin': 'admin',
     'test@meet.com': 'Meet@123',
     'meetUser#': 'meetPass',
-    'Meet': '(^ O^)',
+    'Meet': '(^ O^)!"#$%&\'*+,-./:;<=>?@[\\]_`{|}~',
     'admin@example.com': 'password123',
     'user@demo.com': 'testpass',
     'john.doe@email.com': 'secret456'
@@ -288,7 +286,7 @@ app.get('/basic-auth', (req, res) => {
                         <li><b>admin</b> / admin</li>
                         <li><b>test@meet.com</b> / Meet@123</li>
                         <li><b>meetUser#</b> / meetPass</li>
-                        <li><b>Meet</b> / (^ O^)</li>
+                        <li><b>Meet</b> / <code>(^ O^)!"#$%&amp;'*+,-./:;&lt;=&gt;?@[\]_\`{|}~</code></li>
                       </ul>
                     </div>
                     <div class="back-link">
@@ -299,9 +297,7 @@ app.get('/basic-auth', (req, res) => {
             </html>
         `);
     }
-    const base64Credentials = authHeader.split(' ')[1];
-    const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
-    const [username, password] = credentials.split(':');
+    const [username, password] = decodeBasicAuth(authHeader); // splits at first ':' only, password may contain ':'
     if (users[username] && users[username] === password) {
         // Show secure page with logged-in user and PDF link
         return res.send(`
@@ -374,7 +370,7 @@ app.get('/basic-auth', (req, res) => {
                         <li><b>admin</b> / admin</li>
                         <li><b>test@meet.com</b> / Meet@123</li>
                         <li><b>meetUser#</b> / meetPass</li>
-                        <li><b>Meet</b> / (^ O^)</li>
+                        <li><b>Meet</b> / <code>(^ O^)!"#$%&amp;'*+,-./:;&lt;=&gt;?@[\]_\`{|}~</code></li>
                       </ul>
                     </div>
                     <div class="back-link">
@@ -433,13 +429,10 @@ app.get('/form-auth/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/form-auth-login.html'));
 });
 
-// ponytail: form-auth only — basic auth splits on ':' so this password can't live in the shared users map
-const formAuthUsers = { ...users, 'Meet': '(^ O^)!"#$%&\'*+,-./:;<=>?@[\\]_`{|}~' };
-
 app.post('/form-auth/login', (req, res) => {
     const { username, password } = req.body;
     // Only check if the pair matches, no validation on content
-    if (formAuthUsers[username] && formAuthUsers[username] === password) {
+    if (users[username] && users[username] === password) {
         req.session.formAuthenticated = true;
         req.session.formUsername = username;
         const redirect = req.query.redirect || '/form-auth/secure';
@@ -761,7 +754,7 @@ const simplePasswords = [
     'admin',
     'Meet@123',
     'meetPass',
-    '(^ O^)' // include the special password
+    '(^ O^)!"#$%&\'*+,-./:;<=>?@[\\]_`{|}~' // include the special password
 ];
 
 const requireSimplePasswordAuth = (req, res, next) => {
