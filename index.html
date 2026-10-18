@@ -372,6 +372,26 @@
                 </a>
             </div>
 
+            <!-- Static OTP Multipage Auth Demo -->
+            <div class="demo-card otp" style="--accent-color: #00796B;">
+                <span class="demo-icon">🔢</span>
+                <h3>Static OTP Multipage Auth (A11Y-13499)</h3>
+                <div class="demo-description">
+                    <p>Three-page login modelled on the Nest Pensions flow: credentials → choose the code channel → six single-digit code boxes that auto-advance and submit themselves (no submit button).</p>
+                    <ul>
+                        <li>Start URL: <code>/static-otp-auth</code></li>
+                        <li>Page 1: <code>#username</code>, <code>#password</code>, <code>#login-btn</code></li>
+                        <li>Page 2: <code>#channel-email</code> / <code>#channel-sms</code>, <code>#continue-btn</code></li>
+                        <li>Page 3: type <code>123456</code> into <code>#otp-1</code> (or the <code>#otp-boxes</code> wrapper)</li>
+                        <li>Secure pages: <code>/dashboard</code>, <code>/secure-1</code>, <code>/secure-2</code></li>
+                        <li>Credentials: admin / admin, Code: 123456</li>
+                    </ul>
+                </div>
+                <a href="/static-otp-auth" class="demo-btn" style="background:#00796B;">
+                    Launch Static OTP Demo →
+                </a>
+            </div>
+
             <!-- Simple Password Auth Demo -->
             <div class="demo-card simple" style="--accent-color: #ff9800;">
                 <div class="status-indicator">Port 3005</div>

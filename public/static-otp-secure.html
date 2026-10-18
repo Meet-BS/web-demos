@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static OTP Auth - Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5; min-height: 100vh;
+        }
+        .navbar {
+            background: #00796B; color: white; padding: 15px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .navbar h2 { font-size: 18px; }
+        .navbar a { color: white; margin-right: 16px; font-size: 14px; }
+        .navbar form { display: inline; }
+        .logout-btn {
+            background: rgba(255,255,255,0.2); color: white; border: none;
+            padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
+        .content { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .card {
+            background: white; border-radius: 12px; padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px;
+        }
+        .card h2 { color: #333; margin-bottom: 15px; }
+        .card p, .card li { color: #666; line-height: 1.6; }
+        .card ol { padding-left: 20px; }
+        .success-badge {
+            display: inline-block; background: #e8f5e9; color: #2e7d32;
+            padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h2>🔐 Static OTP Auth - Secure Area</h2>
+        <div>
+            <a href="/static-otp-auth/dashboard">Dashboard</a>
+            <a href="/static-otp-auth/secure-1">Account</a>
+            <a href="/static-otp-auth/secure-2">Documents</a>
+            <form method="POST" action="/static-otp-auth/logout">
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="content">
+        <div class="card">
+            <h2 id="page-title">Welcome to the Secure Dashboard</h2>
+            <p><span class="success-badge">Authenticated via password + static OTP</span></p>
+            <br>
+            <p>You completed all three login pages. <code>/static-otp-auth/dashboard</code>, <code>/secure-1</code> and <code>/secure-2</code> are protected; without a full login you are sent back to the start URL.</p>
+        </div>
+
+        <div class="card">
+            <h2>Login steps for Website Scanner (Multipage auth)</h2>
+            <p>Start URL: <code>/static-otp-auth</code></p>
+            <ol>
+                <li>Page 1 &rsaquo; Enter value <code>#username</code> = <code>admin</code></li>
+                <li>Page 1 &rsaquo; Enter value <code>#password</code> = <code>admin</code></li>
+                <li>Page 1 &rsaquo; Click <code>#login-btn</code></li>
+                <li>Page 2 &rsaquo; Click <code>#channel-email</code></li>
+                <li>Page 2 &rsaquo; Click <code>#continue-btn</code></li>
+                <li>Page 3 &rsaquo; Enter value <code>#otp-1</code> = <code>123456</code> (page submits itself)</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const titles = { '/static-otp-auth/secure-1': 'Account Settings', '/static-otp-auth/secure-2': 'Your Documents' };
+        if (titles[location.pathname]) document.getElementById('page-title').textContent = titles[location.pathname];
+    </script>
+</body>
+</html>
