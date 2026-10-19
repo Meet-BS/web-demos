@@ -646,6 +646,80 @@ app.post('/dlink-auth/logout', (req, res) => {
 });
 
 // =============================================================================
+// STATIC OTP MULTIPAGE AUTH DEMO (A11Y-13499) - Nest Pensions-style flow
+//   Page 1) Username + password, "Log in to my account"
+//   Page 2) Radio: send code by email / SMS, then Continue
+//   Page 3) Six single-digit boxes, auto-advance, auto-submit (no button)
+// =============================================================================
+
+const STATIC_OTP_CODE = '123456';
+const STATIC_OTP_SECURE_PAGES = ['/dashboard', '/secure-1', '/secure-2'];
+
+function requireStaticOtpAuth(req, res, next) {
+    if (req.session.staticOtpAuthenticated) return next();
+    res.redirect('/static-otp-auth');
+}
+
+app.get('/static-otp-auth', (req, res) => {
+    if (req.session.staticOtpAuthenticated) return res.redirect('/static-otp-auth/dashboard');
+    res.sendFile(path.join(__dirname, 'public/static-otp-login.html'));
+});
+
+app.post('/static-otp-auth/login', (req, res) => {
+    const { username, password } = req.body;
+    if (users[username] && users[username] === password) {
+        req.session.staticOtpCredsVerified = true;
+        req.session.staticOtpUsername = username;
+        res.redirect('/static-otp-auth/send-code');
+    } else {
+        res.redirect('/static-otp-auth?error=' + encodeURIComponent('Invalid username or password'));
+    }
+});
+
+app.get('/static-otp-auth/send-code', (req, res) => {
+    if (!req.session.staticOtpCredsVerified) return res.redirect('/static-otp-auth');
+    res.sendFile(path.join(__dirname, 'public/static-otp-send-code.html'));
+});
+
+app.post('/static-otp-auth/send-code', (req, res) => {
+    if (!req.session.staticOtpCredsVerified) return res.redirect('/static-otp-auth');
+    const { channel } = req.body;
+    if (channel !== 'email' && channel !== 'sms') {
+        return res.redirect('/static-otp-auth/send-code?error=' + encodeURIComponent('Choose how you would like to receive your code.'));
+    }
+    req.session.staticOtpCodeRequested = true;
+    res.cookie('staticOtpChannel', channel, { httpOnly: false });
+    res.redirect('/static-otp-auth/verify');
+});
+
+app.get('/static-otp-auth/verify', (req, res) => {
+    if (!req.session.staticOtpCodeRequested) return res.redirect('/static-otp-auth/send-code');
+    res.sendFile(path.join(__dirname, 'public/static-otp-verify.html'));
+});
+
+app.post('/static-otp-auth/verify', (req, res) => {
+    if (!req.session.staticOtpCodeRequested) return res.redirect('/static-otp-auth/send-code');
+    if (req.body.code === STATIC_OTP_CODE) {
+        req.session.staticOtpAuthenticated = true;
+        res.redirect('/static-otp-auth/dashboard');
+    } else {
+        res.redirect('/static-otp-auth/verify?error=' + encodeURIComponent('That code is incorrect. Please try again.'));
+    }
+});
+
+app.get(STATIC_OTP_SECURE_PAGES.map(p => '/static-otp-auth' + p), requireStaticOtpAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/static-otp-secure.html'));
+});
+
+app.post('/static-otp-auth/logout', (req, res) => {
+    res.clearCookie('staticOtpChannel');
+    req.session.destroy((err) => {
+        if (err) console.error('Error destroying session:', err);
+        res.redirect('/static-otp-auth');
+    });
+});
+
+// =============================================================================
 // BLOCKING UI DEMO - Embedded Implementation
 // =============================================================================
 

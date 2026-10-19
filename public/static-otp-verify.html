@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static OTP Auth - Page 3 of 3</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #00796B 0%, #4DB6AC 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+        .otp-container {
+            background: white; padding: 40px; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-width: 460px; width: 100%;
+        }
+        h1 { text-align: center; margin-bottom: 8px; color: #333; }
+        .step-tag { text-align: center; color: #999; font-size: 13px; margin-bottom: 24px; }
+        .sent-to { text-align: center; color: #555; margin-bottom: 20px; font-size: 14px; }
+        .otp-boxes { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; outline: none; }
+        .otp-box {
+            width: 48px; height: 58px; border: 2px solid #ddd; border-radius: 8px;
+            font-size: 26px; text-align: center; transition: border-color 0.2s;
+        }
+        .otp-box:focus { border-color: #00796B; outline: none; }
+        .error { color: #f44336; margin-bottom: 15px; padding: 10px; background: #ffebee; border-radius: 5px; }
+        .code-hint {
+            background: #e8f5e9; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px;
+            border-left: 4px solid #4CAF50; font-size: 14px; color: #333;
+        }
+        .code-hint code { background: #c8e6c9; padding: 2px 8px; border-radius: 4px; font-size: 18px; font-weight: bold; }
+        .status { text-align: center; color: #00796B; font-size: 14px; min-height: 20px; }
+        .resend { text-align: center; color: #999; font-size: 13px; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="otp-container">
+        <h1>Enter your code</h1>
+        <p class="step-tag">Page 3 of 3 &middot; Submits automatically after the sixth digit</p>
+
+        <div class="code-hint">
+            Static code for this demo: <code>123456</code>
+        </div>
+
+        <p class="sent-to">We sent a 6-digit code by <b id="channel-line">email</b>.</p>
+
+        <div id="error" class="error" hidden></div>
+
+        <!-- No submit button: the form submits itself once all six boxes are filled. -->
+        <form id="otp-form" method="POST" action="/static-otp-auth/verify">
+            <div id="otp-boxes" class="otp-boxes" tabindex="0" aria-label="6-digit code">
+                <input type="text" id="otp-1" class="otp-box" maxlength="1" inputmode="numeric" autocomplete="one-time-code" aria-label="Digit 1">
+                <input type="text" id="otp-2" class="otp-box" maxlength="1" inputmode="numeric" aria-label="Digit 2">
+                <input type="text" id="otp-3" class="otp-box" maxlength="1" inputmode="numeric" aria-label="Digit 3">
+                <input type="text" id="otp-4" class="otp-box" maxlength="1" inputmode="numeric" aria-label="Digit 4">
+                <input type="text" id="otp-5" class="otp-box" maxlength="1" inputmode="numeric" aria-label="Digit 5">
+                <input type="text" id="otp-6" class="otp-box" maxlength="1" inputmode="numeric" aria-label="Digit 6">
+            </div>
+            <input type="hidden" name="code" id="otp-code">
+        </form>
+
+        <div id="status" class="status"></div>
+        <div class="resend">Resend code in <span id="countdown">2:56</span> minutes</div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const error = params.get('error');
+        if (error) {
+            const el = document.getElementById('error');
+            el.textContent = error;
+            el.hidden = false;
+        }
+        const channelCookie = document.cookie.split('; ').find(c => c.startsWith('staticOtpChannel='));
+        if (channelCookie && channelCookie.split('=')[1] === 'sms') {
+            document.getElementById('channel-line').textContent = 'text message';
+        }
+
+        const form = document.getElementById('otp-form');
+        const container = document.getElementById('otp-boxes');
+        const boxes = Array.from(document.querySelectorAll('.otp-box'));
+        let submitted = false;
+
+        function firstEmptyBox() {
+            return boxes.find(b => !b.value) || boxes[boxes.length - 1];
+        }
+
+        function maybeSubmit() {
+            if (submitted || !boxes.every(b => b.value)) return;
+            submitted = true;
+            document.getElementById('otp-code').value = boxes.map(b => b.value).join('');
+            document.getElementById('status').textContent = 'Verifying…';
+            form.submit();
+        }
+
+        // Focusing the wrapper (e.g. a selector that targets the div) hands focus to the next empty box.
+        container.addEventListener('focus', () => firstEmptyBox().focus());
+
+        boxes.forEach((box, i) => {
+            box.addEventListener('input', () => {
+                // Keep a single digit per box. A pasted / programmatically set "123456"
+                // keeps only its first digit, like the real customer page.
+                const digit = box.value.replace(/\D/g, '').charAt(0);
+                box.value = digit;
+                if (!digit) return;
+                if (i < boxes.length - 1) boxes[i + 1].focus();
+                maybeSubmit();
+            });
+            box.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !box.value && i > 0) {
+                    boxes[i - 1].value = '';
+                    boxes[i - 1].focus();
+                    e.preventDefault();
+                }
+            });
+        });
+
+        boxes[0].focus();
+
+        let timeLeft = 176;
+        const countdown = document.getElementById('countdown');
+        const timer = setInterval(() => {
+            timeLeft--;
+            countdown.textContent = Math.floor(timeLeft / 60) + ':' + String(timeLeft % 60).padStart(2, '0');
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                countdown.parentElement.textContent = 'You can now resend the code';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
